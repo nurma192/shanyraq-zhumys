@@ -24,7 +24,6 @@ import { Progress } from "@/components/ui/progress";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-// Define types for search results
 interface JobResult {
   id: string;
   title: string;
@@ -35,7 +34,6 @@ interface LocationResult {
   locationValue: string;
 }
 
-// Define type for salary entry from API
 interface SalaryEntryFromAPI {
   id: string | null;
   companyId: number;
@@ -53,7 +51,6 @@ interface SalaryEntryFromAPI {
   hasVerification: boolean;
 }
 
-// Define type for aggregated company salary data
 interface CompanySalaryData {
   companyId: number;
   companyName: string;
@@ -66,7 +63,6 @@ interface CompanySalaryData {
   count: number;
 }
 
-// Define type for salary statistics data
 interface SalaryStatisticsData {
   jobTitle: string;
   location: string;
@@ -89,7 +85,6 @@ interface SalaryStatisticsData {
   salaries: SalaryEntryFromAPI[];
 }
 
-// Define type for our local use
 interface LocalSalaryStatistics {
   data?: SalaryStatisticsData;
 }
@@ -139,11 +134,9 @@ export default function SalariesContent() {
   const jobId = searchParams.get("jobId");
   const locationId = searchParams.get("locationId");
 
-  // Experience level filter
   const [selectedExperience, setSelectedExperience] = useState<string>("all");
   const [experienceOptions, setExperienceOptions] = useState<ExperienceFilterOption[]>([]);
 
-  // Employment type filter
   const [selectedEmployment, setSelectedEmployment] = useState<string>("all");
   const [employmentOptions, setEmploymentOptions] = useState<EmploymentFilterOption[]>([]);
 
@@ -152,7 +145,6 @@ export default function SalariesContent() {
   const isLoading = useSelector(selectSalaryStatisticsLoading);
   const error = useSelector(selectSalaryStatisticsError);
 
-  // Search functionality
   const [jobSearch, setJobSearch] = useState("");
   const [locationSearch, setLocationSearch] = useState("");
 
@@ -168,7 +160,6 @@ export default function SalariesContent() {
   const [selectedJob, setSelectedJob] = useState<JobResult | null>(null);
   const [selectedLocation, setSelectedLocation] = useState<LocationResult | null>(null);
 
-  // If no jobId or locationId, redirect to home
   useEffect(() => {
     if (!jobId || !locationId) {
       toast({
@@ -182,62 +173,65 @@ export default function SalariesContent() {
     }
   }, [jobId, locationId, router, dispatch, toast]);
 
-  // Create experience filter options when data loads
   useEffect(() => {
     if (salaryStats?.data) {
-      const distribution = salaryStats.data.experienceLevelDistribution;
+      // Fix: Add safety check for experienceLevelDistribution
+      const distribution = salaryStats.data.experienceLevelDistribution || {};
       const options: ExperienceFilterOption[] = [{ value: "all", label: "Весь опыт" }];
 
-      Object.entries(distribution).forEach(([level, count]) => {
-        let label = "";
-        switch (level) {
-          case "0-1":
-            label = "0-1 год";
-            break;
-          case "1-3":
-            label = "1-3 года";
-            break;
-          case "3-5":
-            label = "3-5 лет";
-            break;
-          case "5-7":
-            label = "5-7 лет";
-            break;
-          default:
-            label = `${level} лет`;
-        }
-        options.push({ value: level, label: `${label} (${count})` });
-      });
+      if (distribution && typeof distribution === "object") {
+        Object.entries(distribution).forEach(([level, count]) => {
+          let label = "";
+          switch (level) {
+            case "0-1":
+              label = "0-1 год";
+              break;
+            case "1-3":
+              label = "1-3 года";
+              break;
+            case "3-5":
+              label = "3-5 лет";
+              break;
+            case "5-7":
+              label = "5-7 лет";
+              break;
+            default:
+              label = `${level} лет`;
+          }
+          options.push({ value: level, label: `${label} (${count})` });
+        });
+      }
 
       setExperienceOptions(options);
 
-      // Employment type options
-      const empDistribution = salaryStats.data.employmentTypeDistribution;
+      // Fix: Add safety check for employmentTypeDistribution
+      const empDistribution = salaryStats.data.employmentTypeDistribution || {};
       const empOptions: EmploymentFilterOption[] = [{ value: "all", label: "Все типы занятости" }];
 
-      Object.entries(empDistribution).forEach(([type, count]) => {
-        let label = "";
-        switch (type) {
-          case "full-time":
-            label = "Полная занятость";
-            break;
-          case "part-time":
-            label = "Частичная занятость";
-            break;
-          case "contract":
-            label = "Контракт";
-            break;
-          default:
-            label = type;
-        }
-        empOptions.push({ value: type, label: `${label} (${count})` });
-      });
+      if (empDistribution && typeof empDistribution === "object") {
+        Object.entries(empDistribution).forEach(([type, count]) => {
+          let label = "";
+          switch (type) {
+            case "full-time":
+              label = "Полная занятость";
+              break;
+            case "part-time":
+              label = "Частичная занятость";
+              break;
+            case "contract":
+              label = "Контракт";
+              break;
+            default:
+              label = type;
+          }
+          empOptions.push({ value: type, label: `${label} (${count})` });
+        });
+      }
 
       setEmploymentOptions(empOptions);
     }
   }, [salaryStats]);
 
-  // Job search
   useEffect(() => {
     const searchJobs = async () => {
       if (jobSearch.trim().length < 2) {
@@ -259,11 +253,10 @@ export default function SalariesContent() {
       }
     };
 
-    const timeoutId = setTimeout(searchJobs, 300);
+    const timeoutId = setTimeout(searchJobs, 1500);
     return () => clearTimeout(timeoutId);
   }, [jobSearch]);
 
-  // Location search
   useEffect(() => {
     const searchLocations = async () => {
       if (locationSearch.trim().length < 2) {
@@ -285,7 +278,7 @@ export default function SalariesContent() {
       }
     };
 
-    const timeoutId = setTimeout(searchLocations, 300);
+    const timeoutId = setTimeout(searchLocations, 1500);
     return () => clearTimeout(timeoutId);
   }, [locationSearch]);
 
@@ -307,7 +300,6 @@ export default function SalariesContent() {
     }
   };
 
-  // Filter salaries based on experience and employment type
   const getFilteredSalaries = () => {
     if (!salaryStats?.data?.salaries) return [];
 
@@ -318,7 +310,6 @@ export default function SalariesContent() {
     });
   };
 
-  // Aggregate salaries by company
   const getAggregatedCompanySalaries = (): CompanySalaryData[] => {
     const filteredSalaries = getFilteredSalaries();
     const companySalaries: Record<number, CompanySalaryData> = {};
@@ -349,7 +340,6 @@ export default function SalariesContent() {
     return Object.values(companySalaries);
   };
 
-  // If loading or no data yet, show loading state
   if (isLoading || (!salaryStats && !error)) {
     return (
       <div className="w-full min-h-[50vh] flex items-center justify-center py-12">
@@ -361,7 +351,6 @@ export default function SalariesContent() {
     );
   }
 
-  // If error, show error message
   if (error) {
     return (
       <div className="py-8 text-center">
@@ -386,7 +375,7 @@ export default function SalariesContent() {
               )}
 
               {showJobResults && jobResults.length > 0 && (
-                <div className="absolute top-full left-0 w-full bg-white border border-[#E6E6B0] rounded-md shadow-lg z-50 mt-1 max-h-60 overflow-y-auto">
+                <div className="absolute top-full left-0 w-full bg-white border border-[#E6E6B0] rounded-md shadow-lg z-[100] mt-1 max-h-60 overflow-y-auto">
                   {jobResults.map(job => (
                     <div key={job.id} className="px-4 py-2 hover:bg-[#E6E6B0]/20 cursor-pointer" onClick={() => handleJobSelect(job)}>
                       {job.title}
@@ -436,10 +425,8 @@ export default function SalariesContent() {
     );
   }
 
-  // Get data from salaryStats response data
   const actualData = salaryStats?.data;
 
-  // Format currency
   const formatCurrency = (amount: number, notation: "standard" | "compact" = "standard") => {
     const formatter = new Intl.NumberFormat("ru-RU", {
       style: "currency",
@@ -450,7 +437,6 @@ export default function SalariesContent() {
     return formatter.format(amount);
   };
 
-  // Create data structures for components based on API response
   const salaryData: SalaryRangeData = {
     basePay: {
       min: actualData?.minSalary || 0,
@@ -463,10 +449,9 @@ export default function SalariesContent() {
     totalEstimate: actualData?.averageSalary || 0,
   };
 
-  // Extract experience levels and create trajectory data
+  // Fix: Add safety check for salaryByExperienceLevel
   const experienceLevels = Object.keys(actualData?.salaryByExperienceLevel || {});
 
-  // Map experience level to user-friendly names
   const getExperienceLevelName = (level: string) => {
     switch (level) {
       case "0-1":
@@ -484,7 +469,6 @@ export default function SalariesContent() {
     }
   };
 
-  // Create trajectoryData array for career progression
   const trajectoryData = experienceLevels.map(level => {
     const salary = (actualData?.salaryByExperienceLevel || {})[level] || 0;
     return {
@@ -494,10 +478,8 @@ export default function SalariesContent() {
     };
   });
 
-  // Get aggregated company salaries
   const companySalaries = getAggregatedCompanySalaries();
 
-  // Format salaries data for listing with range and count information
   const salaryEntries: SalaryListItem[] = companySalaries.map(company => ({
     id: `${company.companyId}`,
     companyId: `${company.companyId}`,
@@ -512,7 +494,6 @@ export default function SalariesContent() {
     verified: company.verified,
   }));
 
-  // Helper to format the salary display based on range
   const formatSalaryDisplay = (item: SalaryListItem) => {
     const { min, max, count } = item.salaryRange;
 
@@ -532,76 +513,168 @@ export default function SalariesContent() {
 
   return (
     <div className="w-full max-w-7xl mx-auto">
-      {/* Search Panel - Now at the top as a prominent feature */}
-      <Card className="mb-8 border-[#E6E6B0] shadow-md bg-[#E6E6B0]/10">
-        <CardContent className="p-6">
-          <div className="flex flex-col gap-4">
-            <div className="flex items-center gap-2 mb-2">
-              <Search className="h-5 w-5 text-[#628307]" />
-              <h2 className="text-xl font-semibold text-[#1D1D1D]">Поиск зарплат</h2>
+      {/* Redesigned Hero Search Section */}
+      <section className="relative mb-8 bg-gradient-to-r from-[#1D1D1D] to-[#2D2D2D] rounded-2xl overflow-hidden shadow-xl">
+        {/* Decorative background elements */}
+        <div className="absolute top-0 left-0 w-full h-full opacity-10">
+          <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+            <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+              <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#E6E6B0" strokeWidth="0.5" />
+            </pattern>
+            <rect width="100%" height="100%" fill="url(#grid)" />
+          </svg>
+        </div>
+
+        <div className="absolute top-10 right-10 w-56 h-56 rounded-full bg-[#628307]/20 blur-3xl"></div>
+        <div className="absolute bottom-5 left-20 w-32 h-32 rounded-full bg-[#E6E6B0]/20 blur-2xl"></div>
+
+        <div className="relative z-10 px-6 py-10 md:py-12">
+          <div className="max-w-3xl mx-auto text-center mb-8">
+            <div className="inline-flex items-center justify-center bg-[#628307]/20 text-[#E6E6B0] px-3 py-1 rounded-full text-sm font-medium mb-4">
+              <DollarSign className="w-4 h-4 mr-1" />
+              <span>Исследование зарплат</span>
+            </div>
+            <h1 className="text-3xl md:text-4xl font-bold text-[#E6E6B0] mb-4">Узнайте справедливую зарплату для вашей позиции</h1>
+            <p className="text-white/70 text-lg max-w-2xl mx-auto">
+              Точные данные о зарплатах, основанные на реальных отзывах сотрудников с учетом опыта, местоположения и типа занятости.
+            </p>
+          </div>
+
+          <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6 max-w-3xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-[1fr,1fr,auto] gap-4">
+              <div className="relative">
+                <label className="block text-[#E6E6B0] text-sm font-medium mb-2 flex items-center">
+                  <Briefcase className="w-4 h-4 mr-2 text-[#628307]" /> Должность
+                </label>
+                <div className="relative">
+                  <Input
+                    value={jobSearch}
+                    onChange={e => setJobSearch(e.target.value)}
+                    placeholder="Например: Frontend разработчик"
+                    className="pl-10 bg-white/10 border-white/20 text-white focus-visible:ring-[#628307] focus-visible:ring-offset-1 focus-visible:ring-offset-[#1D1D1D]"
+                  />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#628307]" size={18} />
+
+                  {jobLoading && (
+                    <div className="absolute top-1/2 right-3 transform -translate-y-1/2">
+                      <Loader2 className="h-4 w-4 animate-spin text-[#628307]" />
+                    </div>
+                  )}
+
+                  {showJobResults && jobResults.length > 0 && (
+                    <div className="absolute top-full left-0 w-full bg-white border border-[#E6E6B0]/30 rounded-md shadow-lg z-50 mt-1 max-h-60 overflow-y-auto">
+                      {jobResults.map(job => (
+                        <div key={job.id} className="px-4 py-3 hover:bg-[#E6E6B0]/10 cursor-pointer" onClick={() => handleJobSelect(job)}>
+                          <div className="flex items-center">
+                            <Briefcase className="h-4 w-4 text-[#628307] mr-2" />
+                            <span>{job.title}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="relative">
+                <label className="block text-[#E6E6B0] text-sm font-medium mb-2 flex items-center">
+                  <MapPin className="w-4 h-4 mr-2 text-[#628307]" /> Местоположение
+                </label>
+                <div className="relative">
+                  <Input
+                    value={locationSearch}
+                    onChange={e => setLocationSearch(e.target.value)}
+                    placeholder="Например: Алматы, Казахстан"
+                    className="pl-10 bg-white/10 border-white/20 text-white focus-visible:ring-[#628307] focus-visible:ring-offset-1 focus-visible:ring-offset-[#1D1D1D]"
+                  />
+                  <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#628307]" size={18} />
+
+                  {locationLoading && (
+                    <div className="absolute top-1/2 right-3 transform -translate-y-1/2">
+                      <Loader2 className="h-4 w-4 animate-spin text-[#628307]" />
+                    </div>
+                  )}
+
+                  {showLocationResults && locationResults.length > 0 && (
+                    <div className="absolute top-full left-0 w-full bg-white border border-[#E6E6B0]/30 rounded-md shadow-lg z-50 mt-1 max-h-60 overflow-y-auto">
+                      {locationResults.map(location => (
+                        <div key={location.id} className="px-4 py-3 hover:bg-[#E6E6B0]/10 cursor-pointer" onClick={() => handleLocationSelect(location)}>
+                          <div className="flex items-center">
+                            <MapPin className="h-4 w-4 text-[#628307] mr-2" />
+                            <span>{location.locationValue}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="self-end">
+                <Button
+                  onClick={handleSearch}
+                  className="h-10 w-full bg-[#628307] hover:bg-[#4D6706] text-white transition-all duration-200"
+                  disabled={!selectedJob || !selectedLocation}
+                >
+                  <Search className="h-4 w-4 mr-2" />
+                  <span>Искать</span>
+                </Button>
+              </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="relative">
-                <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#628307]">
-                  <Briefcase className="h-4 w-4" />
-                </div>
-                <Input
-                  value={jobSearch}
-                  onChange={e => setJobSearch(e.target.value)}
-                  placeholder="Должность"
-                  className="pl-10 border-[#E6E6B0] focus-visible:ring-[#628307]"
-                />
-                {jobLoading && (
-                  <div className="absolute top-1/2 right-3 transform -translate-y-1/2">
-                    <Loader2 className="h-4 w-4 animate-spin text-[#628307]" />
-                  </div>
-                )}
-                {showJobResults && jobResults.length > 0 && (
-                  <div className="absolute top-full left-0 w-full bg-white border border-[#E6E6B0] rounded-md shadow-lg z-50 mt-1 max-h-60 overflow-y-auto">
-                    {jobResults.map(job => (
-                      <div key={job.id} className="px-4 py-2 hover:bg-[#E6E6B0]/20 cursor-pointer" onClick={() => handleJobSelect(job)}>
-                        {job.title}
-                      </div>
-                    ))}
-                  </div>
-                )}
+            <div className="mt-6 flex flex-wrap justify-center gap-3">
+              <div className="flex items-center text-[#E6E6B0]/70 text-sm">
+                <CheckCircle className="w-4 h-4 mr-1 text-[#628307]" />
+                <span>Реальные данные</span>
               </div>
-
-              <div className="relative">
-                <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#628307]">
-                  <MapPin className="h-4 w-4" />
-                </div>
-                <Input
-                  value={locationSearch}
-                  onChange={e => setLocationSearch(e.target.value)}
-                  placeholder="Местоположение"
-                  className="pl-10 border-[#E6E6B0] focus-visible:ring-[#628307]"
-                />
-                {locationLoading && (
-                  <div className="absolute top-1/2 right-3 transform -translate-y-1/2">
-                    <Loader2 className="h-4 w-4 animate-spin text-[#628307]" />
-                  </div>
-                )}
-                {showLocationResults && locationResults.length > 0 && (
-                  <div className="absolute top-full left-0 w-full bg-white border border-[#E6E6B0] rounded-md shadow-lg z-50 mt-1 max-h-60 overflow-y-auto">
-                    {locationResults.map(location => (
-                      <div key={location.id} className="px-4 py-2 hover:bg-[#E6E6B0]/20 cursor-pointer" onClick={() => handleLocationSelect(location)}>
-                        {location.locationValue}
-                      </div>
-                    ))}
-                  </div>
-                )}
+              <div className="flex items-center text-[#E6E6B0]/70 text-sm">
+                <Users className="w-4 h-4 mr-1 text-[#628307]" />
+                <span>Более {actualData?.sampleSize || 0} записей</span>
               </div>
-
-              <Button onClick={handleSearch} className="h-10 bg-[#628307] hover:bg-[#4D6706] text-white" disabled={!selectedJob || !selectedLocation}>
-                <Search className="h-4 w-4 mr-2" />
-                Поиск зарплат
-              </Button>
+              <div className="flex items-center text-[#E6E6B0]/70 text-sm">
+                <ArrowRight className="w-4 h-4 mr-1 text-[#628307]" />
+                <span>Анализ по опыту работы</span>
+              </div>
             </div>
           </div>
-        </CardContent>
-      </Card>
+
+          {actualData && (
+            <div className="mt-8 flex flex-wrap justify-center gap-4">
+              <Card className="border-0 bg-white/5 backdrop-blur-sm z-[-1] flex-1 min-w-[200px] max-w-[250px]">
+                <CardContent className="p-4 flex flex-col items-center">
+                  <div className="bg-[#628307]/20 p-2 rounded-full mb-2">
+                    <DollarSign className="h-5 w-5 text-[#E6E6B0]" />
+                  </div>
+                  <h3 className="text-[#E6E6B0]/80 text-sm">Средняя зарплата</h3>
+                  <p className="text-xl font-bold text-[#E6E6B0]">{formatCurrency(actualData.averageSalary)}</p>
+                </CardContent>
+              </Card>
+
+              <Card className="border-0 bg-white/5 backdrop-blur-sm z-[-1] flex-1 min-w-[200px] max-w-[250px]">
+                <CardContent className="p-4 flex flex-col items-center">
+                  <div className="bg-[#628307]/20 p-2 rounded-full mb-2">
+                    <Users className="h-5 w-5 text-[#E6E6B0]" />
+                  </div>
+                  <h3 className="text-[#E6E6B0]/80 text-sm">Количество записей</h3>
+                  <p className="text-xl font-bold text-[#E6E6B0]">{actualData.sampleSize}</p>
+                </CardContent>
+              </Card>
+
+              <Card className="border-0 bg-white/5 backdrop-blur-sm z-[-1] flex-1 min-w-[200px] max-w-[250px]">
+                <CardContent className="p-4 flex flex-col items-center">
+                  <div className="bg-[#628307]/20 p-2 rounded-full mb-2">
+                    <BarChart3 className="h-5 w-5 text-[#E6E6B0]" />
+                  </div>
+                  <h3 className="text-[#E6E6B0]/80 text-sm">Диапазон зарплат</h3>
+                  <p className="text-xl font-bold text-[#E6E6B0]">
+                    {formatCurrency(actualData.minSalary, "compact")} - {formatCurrency(actualData.maxSalary, "compact")}
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+        </div>
+      </section>
 
       {/* Title and Summary Card */}
       <Card className="mb-8 border-[#E6E6B0] shadow-md overflow-hidden">

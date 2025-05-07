@@ -89,7 +89,7 @@ export default function Home() {
     setSelectedCompany(null);
   };
 
-  // Job search
+  // Job search with 1.5 second debounce
   useEffect(() => {
     const searchJobs = async () => {
       if (jobSearch.trim().length < 2) {
@@ -111,11 +111,11 @@ export default function Home() {
       }
     };
 
-    const timeoutId = setTimeout(searchJobs, 300);
+    const timeoutId = setTimeout(searchJobs, 1500);
     return () => clearTimeout(timeoutId);
   }, [jobSearch]);
 
-  // Location search
+  // Location search with 1.5 second debounce
   useEffect(() => {
     const searchLocations = async () => {
       if (locationSearch.trim().length < 2) {
@@ -137,11 +137,11 @@ export default function Home() {
       }
     };
 
-    const timeoutId = setTimeout(searchLocations, 300);
+    const timeoutId = setTimeout(searchLocations, 1500);
     return () => clearTimeout(timeoutId);
   }, [locationSearch]);
 
-  // Company search
+  // Company search with 1.5 second debounce
   useEffect(() => {
     const searchCompanies = async () => {
       if (companySearch.trim().length < 2) {
@@ -163,7 +163,7 @@ export default function Home() {
       }
     };
 
-    const timeoutId = setTimeout(searchCompanies, 300);
+    const timeoutId = setTimeout(searchCompanies, 1500);
     return () => clearTimeout(timeoutId);
   }, [companySearch]);
 

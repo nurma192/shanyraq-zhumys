@@ -14,27 +14,13 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Rating } from "@/components/ui/rating";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/components/ui/use-toast";
-import {
-  ChevronLeft,
-  ChevronRight,
-  Save,
-  X,
-  Building,
-  Briefcase,
-  Star,
-  FileUp,
-  Loader2,
-} from "lucide-react";
+import { ChevronLeft, ChevronRight, Save, X, Building, Briefcase, Star, FileUp, Loader2, CheckCircle2 } from "lucide-react";
 import searchAPI from "@/services/searchAPI";
 import reviewAPI from "@/features/review/reviewAPI";
 import debounce from "lodash/debounce";
 import { RootState, AppDispatch } from "@/store";
-import {
-  fetchUserReviews,
-  fetchReviewById,
-} from "@/features/review/reviewSlice";
+import { fetchUserReviews, fetchReviewById } from "@/features/review/reviewSlice";
 
-// Define employment status and type mapping interfaces
 interface StatusMapping {
   CURRENT_EMPLOYEE: string;
   FORMER_EMPLOYEE: string;
@@ -65,49 +51,34 @@ export default function AddReviewPage() {
   const reviewId = searchParams.get("id");
   const isEditing = !!reviewId;
 
-  // Get the reviews from the Redux store
-  const {
-    userReviews,
-    currentReview,
-    isLoading: storeLoading,
-  } = useSelector((state: RootState) => state.review);
+  const { userReviews, currentReview, isLoading: storeLoading } = useSelector((state: RootState) => state.review);
 
-  // State for stepper
   const [activeStep, setActiveStep] = useState(0);
-  const steps = [
-    "Компания и должность",
-    "Ваш опыт",
-    "Детали отзыва",
-    "Подтверждение",
-  ];
+  const steps = ["Компания и должность", "Ваш опыт", "Детали отзыва", "Подтверждение"];
 
-  // State for API data
   const [companies, setCompanies] = useState<any[]>([]);
   const [jobs, setJobs] = useState<any[]>([]);
   const [isLoadingCompanies, setIsLoadingCompanies] = useState(false);
   const [isLoadingJobs, setIsLoadingJobs] = useState(false);
-  const [selectedCompanyId, setSelectedCompanyId] = useState<number | null>(
-    null
-  );
+  const [selectedCompanyId, setSelectedCompanyId] = useState<number | null>(null);
   const [selectedJobId, setSelectedJobId] = useState<number | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [reviewLoaded, setReviewLoaded] = useState(false);
 
-  // Form state - updated initial ratings to be 0 instead of 3
   const [formData, setFormData] = useState({
     companyName: "",
     position: "",
-    employmentStatus: "current", // 'current' or 'former'
-    employmentType: "full-time", // 'full-time', 'part-time', 'contract', etc.
-    employmentContract: null as File | null, // To store the uploaded file
-    overallRating: 0, // Changed from 3 to 0
-    careerOpportunities: 0, // Changed from 3 to 0
-    workLifeBalance: 0, // Changed from 3 to 0
-    compensation: 0, // Changed from 3 to 0
-    jobSecurity: 0, // Changed from 3 to 0
-    management: 0, // Changed from 3 to 0
+    employmentStatus: "current",
+    employmentType: "full-time",
+    employmentContract: null as File | null,
+    overallRating: 0,
+    careerOpportunities: 0,
+    workLifeBalance: 0,
+    compensation: 0,
+    jobSecurity: 0,
+    management: 0,
     title: "",
-    body: "", // Main review content
+    body: "",
     pros: "",
     cons: "",
     advice: "",
@@ -116,32 +87,25 @@ export default function AddReviewPage() {
     confirmTruthful: false,
   });
 
-  // Form errors
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  // Load review data for editing
   useEffect(() => {
     if (isEditing && !reviewLoaded) {
-      // Try to find the review in the userReviews array
-      const existingReview = userReviews.find(
-        (review) => review.id.toString() === reviewId
-      );
+      const existingReview = userReviews.find(review => review.id.toString() === reviewId);
 
       if (existingReview) {
-        // Review found in the store, use it to prefill the form
         prefillFormData(existingReview);
         setReviewLoaded(true);
       } else {
-        // Review not found in the store, fetch it from the API
         dispatch(fetchReviewById(reviewId!))
           .unwrap()
-          .then((data) => {
+          .then(data => {
             if (data) {
               prefillFormData(data);
             }
             setReviewLoaded(true);
           })
-          .catch((error) => {
+          .catch(error => {
             console.error("Failed to fetch review:", error);
             toast({
               title: "Ошибка",
@@ -154,7 +118,6 @@ export default function AddReviewPage() {
     }
   }, [isEditing, reviewId, userReviews, dispatch, reviewLoaded, toast]);
 
-  // When currentReview changes (after API fetch), prefill the form
   useEffect(() => {
     if (isEditing && currentReview && !reviewLoaded) {
       prefillFormData(currentReview);
@@ -162,9 +125,7 @@ export default function AddReviewPage() {
     }
   }, [currentReview, isEditing, reviewLoaded]);
 
-  // Helper function to prefill form data from a review
   const prefillFormData = (review: any) => {
-    // Map employmentStatus from API to form format
     const statusMapping: StatusMapping = {
       CURRENT_EMPLOYEE: "current",
       FORMER_EMPLOYEE: "former",
@@ -172,7 +133,6 @@ export default function AddReviewPage() {
       former: "former",
     };
 
-    // Map employmentType from API to form format
     const typeMapping: TypeMapping = {
       FULL_TIME: "full-time",
       PART_TIME: "part-time",
@@ -186,26 +146,22 @@ export default function AddReviewPage() {
       freelance: "freelance",
     };
 
-    const employmentStatus = review.employmentStatus
-      ? statusMapping[review.employmentStatus] || "current"
-      : "current";
+    const employmentStatus = review.employmentStatus ? statusMapping[review.employmentStatus] || "current" : "current";
 
-    const employmentType = review.employmentType
-      ? typeMapping[review.employmentType] || "full-time"
-      : "full-time";
+    const employmentType = review.employmentType ? typeMapping[review.employmentType] || "full-time" : "full-time";
 
     setFormData({
       companyName: review.companyName || "",
       position: review.position || "",
       employmentStatus,
       employmentType,
-      employmentContract: null, // Can't prefill file input
-      overallRating: review.rating || 0, // Changed from 3 to 0
-      careerOpportunities: review.careerOpportunities || 0, // Changed from 3 to 0
-      workLifeBalance: review.workLifeBalance || 0, // Changed from 3 to 0
-      compensation: review.compensation || 0, // Changed from 3 to 0
-      jobSecurity: review.jobSecurity || 0, // Changed from 3 to 0
-      management: review.management || 0, // Changed from 3 to 0
+      employmentContract: null,
+      overallRating: review.rating || 0,
+      careerOpportunities: review.careerOpportunities || 0,
+      workLifeBalance: review.workLifeBalance || 0,
+      compensation: review.compensation || 0,
+      jobSecurity: review.jobSecurity || 0,
+      management: review.management || 0,
       title: review.title || "",
       body: review.body || "",
       pros: review.pros || "",
@@ -213,10 +169,9 @@ export default function AddReviewPage() {
       advice: review.advice || "",
       recommendToFriend: review.recommendToFriend ? "yes" : "no",
       anonymous: review.anonymous || false,
-      confirmTruthful: true, // Always true when editing
+      confirmTruthful: true,
     });
 
-    // Set IDs for company and job
     if (review.companyId) {
       setSelectedCompanyId(review.companyId);
     }
@@ -226,7 +181,6 @@ export default function AddReviewPage() {
     }
   };
 
-  // Debounced search functions
   const searchCompanies = useRef(
     debounce(async (query: string) => {
       if (!query || query.length < 2) return;
@@ -261,7 +215,6 @@ export default function AddReviewPage() {
     }, 300)
   ).current;
 
-  // Cleanup debounced functions on unmount
   useEffect(() => {
     return () => {
       searchCompanies.cancel();
@@ -269,7 +222,6 @@ export default function AddReviewPage() {
     };
   }, [searchCompanies, searchJobs]);
 
-  // Updated validateStep function to validate ratings in step 1
   const validateStep = (step: number) => {
     const newErrors: Record<string, string> = {};
 
@@ -287,12 +239,10 @@ export default function AddReviewPage() {
           newErrors.overallRating = "Пожалуйста, поставьте общую оценку";
         }
         if (formData.careerOpportunities === 0) {
-          newErrors.careerOpportunities =
-            "Пожалуйста, оцените карьерные возможности";
+          newErrors.careerOpportunities = "Пожалуйста, оцените карьерные возможности";
         }
         if (formData.workLifeBalance === 0) {
-          newErrors.workLifeBalance =
-            "Пожалуйста, оцените баланс работы и жизни";
+          newErrors.workLifeBalance = "Пожалуйста, оцените баланс работы и жизни";
         }
         if (formData.compensation === 0) {
           newErrors.compensation = "Пожалуйста, оцените компенсацию";
@@ -320,8 +270,7 @@ export default function AddReviewPage() {
         break;
       case 3:
         if (!formData.confirmTruthful) {
-          newErrors.confirmTruthful =
-            "Необходимо подтвердить достоверность информации";
+          newErrors.confirmTruthful = "Необходимо подтвердить достоверность информации";
         }
         break;
     }
@@ -332,27 +281,21 @@ export default function AddReviewPage() {
 
   const handleNext = () => {
     if (validateStep(activeStep)) {
-      setActiveStep((prevStep) => prevStep + 1);
+      setActiveStep(prevStep => prevStep + 1);
     }
   };
 
   const handleBack = () => {
-    setActiveStep((prevStep) => prevStep - 1);
+    setActiveStep(prevStep => prevStep - 1);
   };
 
-  const handleChange = (
-    e:
-      | React.ChangeEvent<
-          HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-        >
-      | { target: { name?: string; value: unknown } }
-  ) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement> | { target: { name?: string; value: unknown } }) => {
     const { name, value } = e.target as { name?: string; value: unknown };
     if (name) {
-      setFormData((prev) => ({ ...prev, [name]: value }));
+      setFormData(prev => ({ ...prev, [name]: value }));
 
       if (errors[name]) {
-        setErrors((prev) => {
+        setErrors(prev => {
           const newErrors = { ...prev };
           delete newErrors[name];
           return newErrors;
@@ -362,11 +305,10 @@ export default function AddReviewPage() {
   };
 
   const handleCheckboxChange = (name: string, checked: boolean) => {
-    setFormData((prev) => ({ ...prev, [name]: checked }));
+    setFormData(prev => ({ ...prev, [name]: checked }));
 
-    // Clear error when field is changed
     if (errors[name]) {
-      setErrors((prev) => {
+      setErrors(prev => {
         const newErrors = { ...prev };
         delete newErrors[name];
         return newErrors;
@@ -375,13 +317,13 @@ export default function AddReviewPage() {
   };
 
   const handleRatingChange = (name: string, value: number) => {
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files && files.length > 0) {
-      setFormData((prev) => ({
+      setFormData(prev => ({
         ...prev,
         employmentContract: files[0],
       }));
@@ -389,13 +331,13 @@ export default function AddReviewPage() {
   };
 
   const handleCompanySelect = (company: any) => {
-    setFormData((prev) => ({ ...prev, companyName: company.name }));
+    setFormData(prev => ({ ...prev, companyName: company.name }));
     setSelectedCompanyId(company.id);
     setCompanies([]);
   };
 
   const handleJobSelect = (job: any) => {
-    setFormData((prev) => ({ ...prev, position: job.title }));
+    setFormData(prev => ({ ...prev, position: job.title }));
     setSelectedJobId(job.id);
     setJobs([]);
   };
@@ -433,10 +375,7 @@ export default function AddReviewPage() {
         confirmTruthful: formData.confirmTruthful,
       };
 
-      submitData.append(
-        "review",
-        new Blob([JSON.stringify(reviewData)], { type: "application/json" })
-      );
+      submitData.append("review", new Blob([JSON.stringify(reviewData)], { type: "application/json" }));
 
       if (formData.employmentContract) {
         submitData.append("contractFile", formData.employmentContract);
@@ -444,14 +383,12 @@ export default function AddReviewPage() {
 
       let response;
       if (isEditing && reviewId) {
-        // Update existing review
         response = await reviewAPI.updateReview(reviewId, submitData);
         toast({
           title: "Успешно!",
           description: "Ваш отзыв успешно обновлен",
         });
       } else {
-        // Create new review
         response = await reviewAPI.submitReview(submitData);
         toast({
           title: "Успешно!",
@@ -459,17 +396,13 @@ export default function AddReviewPage() {
         });
       }
 
-      // Refresh user reviews after submission
       dispatch(fetchUserReviews());
-
       router.push("/profile/reviews");
     } catch (error: any) {
       console.error("Error submitting review:", error);
       toast({
         title: "Ошибка",
-        description:
-          error.response?.data?.message ||
-          "Произошла ошибка при отправке отзыва",
+        description: error.response?.data?.message || "Произошла ошибка при отправке отзыва",
         variant: "destructive",
       });
     } finally {
@@ -481,14 +414,13 @@ export default function AddReviewPage() {
     router.back();
   };
 
-  // If we're in edit mode but still loading the review, show a loading state
   if (isEditing && !reviewLoaded && storeLoading) {
     return (
       <Container className="py-6">
         <div className="max-w-3xl mx-auto flex items-center justify-center min-h-[300px]">
           <div className="flex flex-col items-center space-y-4">
-            <Loader2 className="h-12 w-12 animate-spin text-[#800000]" />
-            <p className="text-gray-600">Загрузка данных отзыва...</p>
+            <Loader2 className="h-12 w-12 animate-spin text-[#628307]" />
+            <p className="text-[#1D1D1D]/70">Загрузка данных отзыва...</p>
           </div>
         </div>
       </Container>
@@ -496,56 +428,42 @@ export default function AddReviewPage() {
   }
 
   return (
-    <Container className="py-6">
+    <Container className="py-6 px-4 sm:px-6">
       <div className="max-w-3xl mx-auto">
         <div className="mb-6 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-gray-900">
-            {isEditing ? "Редактирование отзыва" : "Добавление отзыва"}
-          </h1>
+          <h1 className="text-2xl font-bold text-[#1D1D1D]">{isEditing ? "Редактирование отзыва" : "Добавление отзыва"}</h1>
 
-          {/* Mobile Cancel Button */}
           <Button
             variant="outline"
             onClick={handleCancel}
-            className="md:hidden flex items-center text-red-500 hover:text-red-700 hover:bg-red-50"
+            className="md:hidden flex items-center text-[#628307] border-[#628307]/20 hover:bg-[#628307]/10 hover:text-[#4D6706]"
           >
             <X size={18} className="mr-1" />
             Отмена
           </Button>
         </div>
 
-        <Card className="mb-6">
-          <CardContent className="p-6">
-            {/* Stepper - Mobile uses numbers, desktop uses text */}
+        <Card className="mb-6 border-[#E6E6B0]/30 shadow-sm">
+          <CardContent className="p-4 sm:p-6">
             <div className="mb-6">
               <div className="flex justify-between w-full mb-2">
                 {steps.map((label, index) => (
                   <div
                     key={index}
                     className={`flex flex-col items-center text-xs md:text-sm w-full ${
-                      activeStep >= index
-                        ? "text-[#800000] font-medium"
-                        : "text-gray-400"
+                      activeStep >= index ? "text-[#628307] font-medium" : "text-[#1D1D1D]/50"
                     }`}
                   >
                     <div
                       className={`
-                      h-2 w-full ${
-                        index === 0
-                          ? "ml-auto w-1/2"
-                          : index === steps.length - 1
-                          ? "mr-auto w-1/2"
-                          : ""
-                      }
-                      ${activeStep >= index ? "bg-[#800000]" : "bg-gray-200"}
+                      h-2 w-full ${index === 0 ? "ml-auto w-1/2" : index === steps.length - 1 ? "mr-auto w-1/2" : ""}
+                      ${activeStep >= index ? "bg-[#628307]" : "bg-[#E6E6B0]/30"}
                     `}
                     ></div>
                     <div className="mt-2 text-center flex flex-col items-center">
-                      {/* Mobile - show numbers */}
                       <span className="md:hidden text-lg font-semibold flex items-center justify-center w-7 h-7 rounded-full border border-current">
                         {index + 1}
                       </span>
-                      {/* Desktop - show text */}
                       <span className="hidden md:block">{label}</span>
                     </div>
                   </div>
@@ -553,125 +471,92 @@ export default function AddReviewPage() {
               </div>
             </div>
 
-            {/* Step content */}
             <div className="min-h-[350px] mb-6">
               {activeStep === 0 && (
                 <div className="space-y-4">
-                  <h2 className="text-xl font-semibold text-[#800000] mb-4">
-                    Информация о компании и должности
-                  </h2>
+                  <h2 className="text-xl font-semibold text-[#628307] mb-4">Информация о компании и должности</h2>
 
                   <div className="space-y-2">
-                    <Label htmlFor="companyName">Компания *</Label>
-                    <p className="text-sm text-gray-500 mb-1">
-                      Введите название компании
-                    </p>
+                    <Label htmlFor="companyName" className="text-[#1D1D1D]">
+                      Компания *
+                    </Label>
+                    <p className="text-sm text-[#1D1D1D]/70 mb-1">Введите название компании</p>
                     <div className="relative">
-                      <Building
-                        className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
-                        size={16}
-                      />
+                      <Building className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#628307]" size={16} />
                       <Input
                         id="companyName"
                         name="companyName"
                         value={formData.companyName}
-                        onChange={(e) => {
+                        onChange={e => {
                           handleChange(e);
                           searchCompanies(e.target.value);
                           setSelectedCompanyId(null);
                         }}
-                        className={`pl-10 ${
-                          errors.companyName ? "border-red-500" : ""
-                        }`}
+                        className={`pl-10 border-[#E6E6B0]/30 focus:border-[#628307] focus:ring-[#628307]/20 ${errors.companyName ? "border-red-500" : ""}`}
                         placeholder="Название компании"
                       />
-                      {isLoadingCompanies && (
-                        <Loader2 className="h-4 w-4 animate-spin absolute right-3 top-1/2 transform -translate-y-1/2" />
-                      )}
+                      {isLoadingCompanies && <Loader2 className="h-4 w-4 animate-spin absolute right-3 top-1/2 transform -translate-y-1/2 text-[#628307]" />}
                     </div>
                     {companies.length > 0 && (
-                      <div className="absolute z-10 mt-1 max-w-[calc(100%-2rem)] bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-auto">
-                        {companies.map((company) => (
+                      <div className="absolute z-10 mt-1 max-w-[calc(100%-2rem)] bg-white border border-[#E6E6B0]/30 rounded-md shadow-lg max-h-60 overflow-auto">
+                        {companies.map(company => (
                           <div
                             key={company.id}
-                            className="px-4 py-2 cursor-pointer hover:bg-gray-100 flex items-center gap-2"
+                            className="px-4 py-2 cursor-pointer hover:bg-[#E6E6B0]/20 flex items-center gap-2"
                             onClick={() => handleCompanySelect(company)}
                           >
-                            {company.logoUrl && (
-                              <img
-                                src={company.logoUrl}
-                                alt={company.name}
-                                className="w-6 h-6 object-contain"
-                              />
-                            )}
-                            <span>{company.name}</span>
+                            {company.logoUrl && <img src={company.logoUrl || "/placeholder.svg"} alt={company.name} className="w-6 h-6 object-contain" />}
+                            <span className="text-[#1D1D1D]">{company.name}</span>
                           </div>
                         ))}
                       </div>
                     )}
-                    {errors.companyName && (
-                      <p className="text-red-500 text-sm">
-                        {errors.companyName}
-                      </p>
-                    )}
+                    {errors.companyName && <p className="text-red-500 text-sm">{errors.companyName}</p>}
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="position">Должность *</Label>
-                    <p className="text-sm text-gray-500 mb-1">
-                      Введите должность
-                    </p>
+                    <Label htmlFor="position" className="text-[#1D1D1D]">
+                      Должность *
+                    </Label>
+                    <p className="text-sm text-[#1D1D1D]/70 mb-1">Введите должность</p>
                     <div className="relative">
-                      <Briefcase
-                        className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
-                        size={16}
-                      />
+                      <Briefcase className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#628307]" size={16} />
                       <Input
                         id="position"
                         name="position"
                         value={formData.position}
-                        onChange={(e) => {
+                        onChange={e => {
                           handleChange(e);
                           searchJobs(e.target.value);
                           setSelectedJobId(null);
                         }}
-                        className={`pl-10 ${
-                          errors.position ? "border-red-500" : ""
-                        }`}
+                        className={`pl-10 border-[#E6E6B0]/30 focus:border-[#628307] focus:ring-[#628307]/20 ${errors.position ? "border-red-500" : ""}`}
                         placeholder="Ваша должность в компании"
                       />
-                      {isLoadingJobs && (
-                        <Loader2 className="h-4 w-4 animate-spin absolute right-3 top-1/2 transform -translate-y-1/2" />
-                      )}
+                      {isLoadingJobs && <Loader2 className="h-4 w-4 animate-spin absolute right-3 top-1/2 transform -translate-y-1/2 text-[#628307]" />}
                     </div>
                     {jobs.length > 0 && (
-                      <div className="absolute z-10 mt-1 max-w-[calc(100%-2rem)] bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-auto">
-                        {jobs.map((job) => (
-                          <div
-                            key={job.id}
-                            className="px-4 py-2 cursor-pointer hover:bg-gray-100"
-                            onClick={() => handleJobSelect(job)}
-                          >
-                            <div className="font-medium">{job.title}</div>
-                            <div className="text-xs text-gray-500">
-                              {job.description}
-                            </div>
+                      <div className="absolute z-10 mt-1 max-w-[calc(100%-2rem)] bg-white border border-[#E6E6B0]/30 rounded-md shadow-lg max-h-60 overflow-auto">
+                        {jobs.map(job => (
+                          <div key={job.id} className="px-4 py-2 cursor-pointer hover:bg-[#E6E6B0]/20" onClick={() => handleJobSelect(job)}>
+                            <div className="font-medium text-[#1D1D1D]">{job.title}</div>
+                            <div className="text-xs text-[#1D1D1D]/70">{job.description}</div>
                           </div>
                         ))}
                       </div>
                     )}
-                    {errors.position && (
-                      <p className="text-red-500 text-sm">{errors.position}</p>
-                    )}
+                    {errors.position && <p className="text-red-500 text-sm">{errors.position}</p>}
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="employmentStatus">Статус работы *</Label>
+                    <Label htmlFor="employmentStatus" className="text-[#1D1D1D]">
+                      Статус работы *
+                    </Label>
                     <RadioGroup
                       id="employmentStatus"
                       name="employmentStatus"
                       value={formData.employmentStatus}
-                      onValueChange={(value) =>
+                      onValueChange={value =>
                         handleChange({
                           target: { name: "employmentStatus", value },
                         })
@@ -679,24 +564,30 @@ export default function AddReviewPage() {
                       className="flex flex-col space-y-1 sm:flex-row sm:space-y-0 sm:space-x-4"
                     >
                       <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="current" id="current" />
-                        <Label htmlFor="current">Текущий сотрудник</Label>
+                        <RadioGroupItem value="current" id="current" className="text-[#628307] border-[#628307]/30" />
+                        <Label htmlFor="current" className="text-[#1D1D1D]">
+                          Текущий сотрудник
+                        </Label>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="former" id="former" />
-                        <Label htmlFor="former">Бывший сотрудник</Label>
+                        <RadioGroupItem value="former" id="former" className="text-[#628307] border-[#628307]/30" />
+                        <Label htmlFor="former" className="text-[#1D1D1D]">
+                          Бывший сотрудник
+                        </Label>
                       </div>
                     </RadioGroup>
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="employmentType">Тип занятости</Label>
+                    <Label htmlFor="employmentType" className="text-[#1D1D1D]">
+                      Тип занятости
+                    </Label>
                     <select
                       id="employmentType"
                       name="employmentType"
                       value={formData.employmentType}
-                      onChange={(e) => handleChange(e)}
-                      className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                      onChange={e => handleChange(e)}
+                      className="w-full rounded-md border border-[#E6E6B0]/30 bg-white px-3 py-2 text-[#1D1D1D] text-sm focus:border-[#628307] focus:ring-[#628307]/20"
                     >
                       <option value="full-time">Полная занятость</option>
                       <option value="part-time">Частичная занятость</option>
@@ -707,24 +598,16 @@ export default function AddReviewPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label
-                      htmlFor="employmentContract"
-                      className="flex items-center"
-                    >
-                      Трудовой договор{" "}
-                      <span className="text-gray-400 text-sm ml-2">
-                        {isEditing
-                          ? "(при необходимости обновить)"
-                          : "(необязательно)"}
-                      </span>
+                    <Label htmlFor="employmentContract" className="flex items-center text-[#1D1D1D]">
+                      Трудовой договор <span className="text-[#1D1D1D]/50 text-sm ml-2">{isEditing ? "(при необходимости обновить)" : "(необязательно)"}</span>
                     </Label>
                     <div className="relative">
                       <Label
                         htmlFor="employmentContract"
-                        className="flex items-center justify-center gap-2 border border-dashed border-gray-300 rounded-md p-4 cursor-pointer hover:bg-gray-50"
+                        className="flex items-center justify-center gap-2 border border-dashed border-[#E6E6B0]/30 rounded-md p-4 cursor-pointer hover:bg-[#E6E6B0]/10"
                       >
-                        <FileUp size={20} className="text-[#800000]" />
-                        <span>
+                        <FileUp size={20} className="text-[#628307]" />
+                        <span className="text-[#1D1D1D]">
                           {formData.employmentContract
                             ? formData.employmentContract.name
                             : isEditing
@@ -741,199 +624,148 @@ export default function AddReviewPage() {
                         accept=".pdf,.doc,.docx"
                       />
                     </div>
-                    <p className="text-gray-500 text-sm">
-                      Загрузите документ, подтверждающий ваше трудоустройство.
-                      Это поможет верифицировать ваш отзыв.
-                    </p>
+                    <p className="text-[#1D1D1D]/70 text-sm">Загрузите документ, подтверждающий ваше трудоустройство. Это поможет верифицировать ваш отзыв.</p>
                   </div>
                 </div>
               )}
 
               {activeStep === 1 && (
                 <div className="space-y-6">
-                  <h2 className="text-xl font-semibold text-[#800000] mb-4">
-                    Оцените свой опыт работы
-                  </h2>
+                  <h2 className="text-xl font-semibold text-[#628307] mb-4">Оцените свой опыт работы</h2>
 
-                  <p className="text-gray-600 mb-4">
-                    Пожалуйста, оцените следующие аспекты работы, выбрав
-                    соответствующее количество звезд (обязательно)
-                  </p>
+                  <p className="text-[#1D1D1D]/70 mb-4">Пожалуйста, оцените следующие аспекты работы, выбрав соответствующее количество звезд (обязательно)</p>
 
                   <div className="space-y-2">
-                    <Label>
+                    <Label className="text-[#1D1D1D]">
                       Общая оценка <span className="text-red-500">*</span>
                     </Label>
                     <div className="flex items-center gap-2">
                       <Rating
                         value={formData.overallRating}
-                        onValueChange={(value) =>
-                          handleRatingChange("overallRating", value)
-                        }
-                        icon={
-                          <Star className="fill-[#f5b400] stroke-[#f5b400]" />
-                        }
-                        emptyIcon={
-                          <Star className="fill-gray-200 stroke-gray-200" />
-                        }
+                        onValueChange={value => handleRatingChange("overallRating", value)}
+                        icon={<Star className="fill-[#628307] stroke-[#628307]" />}
+                        emptyIcon={<Star className="fill-[#E6E6B0]/30 stroke-[#E6E6B0]/30" />}
                         className="text-2xl"
                       />
-                      <span className="text-gray-600">
-                        {formData.overallRating} / 5
-                      </span>
+                      <span className="text-[#1D1D1D]/70">{formData.overallRating} / 5</span>
                     </div>
-                    {errors.overallRating && (
-                      <p className="text-red-500 text-sm">
-                        {errors.overallRating}
-                      </p>
-                    )}
+                    {errors.overallRating && <p className="text-red-500 text-sm">{errors.overallRating}</p>}
                   </div>
 
-                  <Separator className="my-4 bg-[#800000]/10" />
+                  <Separator className="my-4 bg-[#628307]/10" />
 
-                  <h3 className="text-lg font-medium text-[#800000]">
-                    Оцените по категориям
-                  </h3>
+                  <h3 className="text-lg font-medium text-[#628307]">Оцените по категориям</h3>
 
                   <div className="space-y-4">
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                      <Label className="min-w-[180px]">
-                        Карьерные возможности{" "}
-                        <span className="text-red-500">*</span>
+                      <Label className="min-w-[180px] text-[#1D1D1D]">
+                        Карьерные возможности <span className="text-red-500">*</span>
                       </Label>
                       <Rating
                         value={formData.careerOpportunities}
-                        onValueChange={(value) =>
-                          handleRatingChange("careerOpportunities", value)
-                        }
+                        onValueChange={value => handleRatingChange("careerOpportunities", value)}
+                        icon={<Star className="fill-[#628307] stroke-[#628307]" />}
+                        emptyIcon={<Star className="fill-[#E6E6B0]/30 stroke-[#E6E6B0]/30" />}
                         className="text-xl"
                       />
                     </div>
-                    {errors.careerOpportunities && (
-                      <p className="text-red-500 text-sm">
-                        {errors.careerOpportunities}
-                      </p>
-                    )}
+                    {errors.careerOpportunities && <p className="text-red-500 text-sm">{errors.careerOpportunities}</p>}
 
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                      <Label className="min-w-[180px]">
-                        Баланс работы и личной жизни{" "}
-                        <span className="text-red-500">*</span>
+                      <Label className="min-w-[180px] text-[#1D1D1D]">
+                        Баланс работы и личной жизни <span className="text-red-500">*</span>
                       </Label>
                       <Rating
                         value={formData.workLifeBalance}
-                        onValueChange={(value) =>
-                          handleRatingChange("workLifeBalance", value)
-                        }
+                        onValueChange={value => handleRatingChange("workLifeBalance", value)}
+                        icon={<Star className="fill-[#628307] stroke-[#628307]" />}
+                        emptyIcon={<Star className="fill-[#E6E6B0]/30 stroke-[#E6E6B0]/30" />}
                         className="text-xl"
                       />
                     </div>
-                    {errors.workLifeBalance && (
-                      <p className="text-red-500 text-sm">
-                        {errors.workLifeBalance}
-                      </p>
-                    )}
+                    {errors.workLifeBalance && <p className="text-red-500 text-sm">{errors.workLifeBalance}</p>}
 
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                      <Label className="min-w-[180px]">
-                        Компенсация и льготы{" "}
-                        <span className="text-red-500">*</span>
+                      <Label className="min-w-[180px] text-[#1D1D1D]">
+                        Компенсация и льготы <span className="text-red-500">*</span>
                       </Label>
                       <Rating
                         value={formData.compensation}
-                        onValueChange={(value) =>
-                          handleRatingChange("compensation", value)
-                        }
+                        onValueChange={value => handleRatingChange("compensation", value)}
+                        icon={<Star className="fill-[#628307] stroke-[#628307]" />}
+                        emptyIcon={<Star className="fill-[#E6E6B0]/30 stroke-[#E6E6B0]/30" />}
                         className="text-xl"
                       />
                     </div>
-                    {errors.compensation && (
-                      <p className="text-red-500 text-sm">
-                        {errors.compensation}
-                      </p>
-                    )}
+                    {errors.compensation && <p className="text-red-500 text-sm">{errors.compensation}</p>}
 
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                      <Label className="min-w-[180px]">
-                        Стабильность работы{" "}
-                        <span className="text-red-500">*</span>
+                      <Label className="min-w-[180px] text-[#1D1D1D]">
+                        Стабильность работы <span className="text-red-500">*</span>
                       </Label>
                       <Rating
                         value={formData.jobSecurity}
-                        onValueChange={(value) =>
-                          handleRatingChange("jobSecurity", value)
-                        }
+                        onValueChange={value => handleRatingChange("jobSecurity", value)}
+                        icon={<Star className="fill-[#628307] stroke-[#628307]" />}
+                        emptyIcon={<Star className="fill-[#E6E6B0]/30 stroke-[#E6E6B0]/30" />}
                         className="text-xl"
                       />
                     </div>
-                    {errors.jobSecurity && (
-                      <p className="text-red-500 text-sm">
-                        {errors.jobSecurity}
-                      </p>
-                    )}
+                    {errors.jobSecurity && <p className="text-red-500 text-sm">{errors.jobSecurity}</p>}
 
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                      <Label className="min-w-[180px]">
-                        Качество управления{" "}
-                        <span className="text-red-500">*</span>
+                      <Label className="min-w-[180px] text-[#1D1D1D]">
+                        Качество управления <span className="text-red-500">*</span>
                       </Label>
                       <Rating
                         value={formData.management}
-                        onValueChange={(value) =>
-                          handleRatingChange("management", value)
-                        }
+                        onValueChange={value => handleRatingChange("management", value)}
+                        icon={<Star className="fill-[#628307] stroke-[#628307]" />}
+                        emptyIcon={<Star className="fill-[#E6E6B0]/30 stroke-[#E6E6B0]/30" />}
                         className="text-xl"
                       />
                     </div>
-                    {errors.management && (
-                      <p className="text-red-500 text-sm">
-                        {errors.management}
-                      </p>
-                    )}
+                    {errors.management && <p className="text-red-500 text-sm">{errors.management}</p>}
                   </div>
                 </div>
               )}
 
               {activeStep === 2 && (
                 <div className="space-y-4">
-                  <h2 className="text-xl font-semibold text-[#800000] mb-4">
-                    Подробности вашего отзыва
-                  </h2>
+                  <h2 className="text-xl font-semibold text-[#628307] mb-4">Подробности вашего отзыва</h2>
 
                   <div className="space-y-2">
-                    <Label htmlFor="title">Заголовок отзыва *</Label>
+                    <Label htmlFor="title" className="text-[#1D1D1D]">
+                      Заголовок отзыва *
+                    </Label>
                     <Input
                       id="title"
                       name="title"
                       value={formData.title}
                       onChange={handleChange}
-                      className={errors.title ? "border-red-500" : ""}
+                      className={`border-[#E6E6B0]/30 focus:border-[#628307] focus:ring-[#628307]/20 ${errors.title ? "border-red-500" : ""}`}
                       placeholder="Кратко опишите ваш опыт работы в компании"
                     />
-                    {errors.title && (
-                      <p className="text-red-500 text-sm">{errors.title}</p>
-                    )}
+                    {errors.title && <p className="text-red-500 text-sm">{errors.title}</p>}
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="body">Основной отзыв *</Label>
+                    <Label htmlFor="body" className="text-[#1D1D1D]">
+                      Основной отзыв *
+                    </Label>
                     <Textarea
                       id="body"
                       name="body"
                       value={formData.body}
                       onChange={handleChange}
-                      className={`min-h-[100px] ${
-                        errors.body ? "border-red-500" : ""
-                      }`}
+                      className={`min-h-[100px] border-[#E6E6B0]/30 focus:border-[#628307] focus:ring-[#628307]/20 ${errors.body ? "border-red-500" : ""}`}
                       placeholder="Опишите ваш общий опыт работы в компании"
                     />
-                    {errors.body && (
-                      <p className="text-red-500 text-sm">{errors.body}</p>
-                    )}
+                    {errors.body && <p className="text-red-500 text-sm">{errors.body}</p>}
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="pros">
+                    <Label htmlFor="pros" className="text-[#1D1D1D]">
                       Плюсы <span className="text-red-500">*</span>
                     </Label>
                     <Textarea
@@ -941,18 +773,14 @@ export default function AddReviewPage() {
                       name="pros"
                       value={formData.pros}
                       onChange={handleChange}
-                      className={`min-h-[100px] ${
-                        errors.pros ? "border-red-500" : ""
-                      }`}
+                      className={`min-h-[100px] border-[#E6E6B0]/30 focus:border-[#628307] focus:ring-[#628307]/20 ${errors.pros ? "border-red-500" : ""}`}
                       placeholder="Что вам нравилось в компании?"
                     />
-                    {errors.pros && (
-                      <p className="text-red-500 text-sm">{errors.pros}</p>
-                    )}
+                    {errors.pros && <p className="text-red-500 text-sm">{errors.pros}</p>}
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="cons">
+                    <Label htmlFor="cons" className="text-[#1D1D1D]">
                       Минусы <span className="text-red-500">*</span>
                     </Label>
                     <Textarea
@@ -960,37 +788,32 @@ export default function AddReviewPage() {
                       name="cons"
                       value={formData.cons}
                       onChange={handleChange}
-                      className={`min-h-[100px] ${
-                        errors.cons ? "border-red-500" : ""
-                      }`}
+                      className={`min-h-[100px] border-[#E6E6B0]/30 focus:border-[#628307] focus:ring-[#628307]/20 ${errors.cons ? "border-red-500" : ""}`}
                       placeholder="Что можно было бы улучшить?"
                     />
-                    {errors.cons && (
-                      <p className="text-red-500 text-sm">{errors.cons}</p>
-                    )}
+                    {errors.cons && <p className="text-red-500 text-sm">{errors.cons}</p>}
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="advice">
-                      Советы руководству{" "}
-                      <span className="text-gray-400">(необязательно)</span>
+                    <Label htmlFor="advice" className="text-[#1D1D1D]">
+                      Советы руководству <span className="text-[#1D1D1D]/50">(необязательно)</span>
                     </Label>
                     <Textarea
                       id="advice"
                       name="advice"
                       value={formData.advice}
                       onChange={handleChange}
-                      className="min-h-[80px]"
+                      className="min-h-[80px] border-[#E6E6B0]/30 focus:border-[#628307] focus:ring-[#628307]/20"
                       placeholder="Что бы вы посоветовали руководству компании?"
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <Label>Рекомендуете ли вы эту компанию?</Label>
+                    <Label className="text-[#1D1D1D]">Рекомендуете ли вы эту компанию?</Label>
                     <RadioGroup
                       name="recommendToFriend"
                       value={formData.recommendToFriend}
-                      onValueChange={(value) =>
+                      onValueChange={value =>
                         handleChange({
                           target: { name: "recommendToFriend", value },
                         })
@@ -998,12 +821,16 @@ export default function AddReviewPage() {
                       className="flex space-x-4"
                     >
                       <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="yes" id="recommend-yes" />
-                        <Label htmlFor="recommend-yes">Да</Label>
+                        <RadioGroupItem value="yes" id="recommend-yes" className="text-[#628307] border-[#628307]/30" />
+                        <Label htmlFor="recommend-yes" className="text-[#1D1D1D]">
+                          Да
+                        </Label>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="no" id="recommend-no" />
-                        <Label htmlFor="recommend-no">Нет</Label>
+                        <RadioGroupItem value="no" id="recommend-no" className="text-[#628307] border-[#628307]/30" />
+                        <Label htmlFor="recommend-no" className="text-[#1D1D1D]">
+                          Нет
+                        </Label>
                       </div>
                     </RadioGroup>
                   </div>
@@ -1012,42 +839,33 @@ export default function AddReviewPage() {
 
               {activeStep === 3 && (
                 <div className="space-y-6">
-                  <h2 className="text-xl font-semibold text-[#800000] mb-4">
-                    Подтверждение и отправка
-                  </h2>
+                  <h2 className="text-xl font-semibold text-[#628307] mb-4">Подтверждение и отправка</h2>
 
-                  <Card className="border border-[#800000]/10">
+                  <Card className="border border-[#628307]/20 bg-[#E6E6B0]/10">
                     <CardContent className="p-4">
-                      <h3 className="font-semibold text-lg text-[#800000] mb-2 pb-2 border-b border-[#800000]/10">
-                        Предварительный просмотр
-                      </h3>
+                      <h3 className="font-semibold text-lg text-[#628307] mb-2 pb-2 border-b border-[#628307]/10">Предварительный просмотр</h3>
 
                       <div className="space-y-4">
                         <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
-                          <h4 className="text-xl font-medium">
-                            {formData.title}
-                          </h4>
+                          <h4 className="text-xl font-medium text-[#1D1D1D]">{formData.title}</h4>
                           <div className="flex items-center">
                             <Rating
                               value={formData.overallRating}
                               readOnly
+                              icon={<Star className="fill-[#628307] stroke-[#628307]" />}
+                              emptyIcon={<Star className="fill-[#E6E6B0]/30 stroke-[#E6E6B0]/30" />}
                               className="text-lg"
                             />
-                            <span className="ml-2 text-sm font-medium">
-                              {formData.overallRating} / 5
-                            </span>
+                            <span className="ml-2 text-sm font-medium text-[#1D1D1D]">{formData.overallRating} / 5</span>
                           </div>
                         </div>
 
                         <div>
-                          <p className="text-[#800000] font-medium">
+                          <p className="text-[#628307] font-medium">
                             {formData.companyName} | {formData.position}
                           </p>
-                          <p className="text-gray-500 text-sm">
-                            {formData.employmentStatus === "current"
-                              ? "Текущий сотрудник"
-                              : "Бывший сотрудник"}{" "}
-                            |{" "}
+                          <p className="text-[#1D1D1D]/70 text-sm">
+                            {formData.employmentStatus === "current" ? "Текущий сотрудник" : "Бывший сотрудник"} |{" "}
                             {
                               {
                                 "full-time": "Полная занятость",
@@ -1059,36 +877,36 @@ export default function AddReviewPage() {
                             }
                           </p>
                           {(formData.employmentContract || isEditing) && (
-                            <p className="text-green-600 text-sm flex items-center gap-1 mt-1">
-                              <span className="w-2 h-2 inline-block bg-green-600 rounded-full"></span>
+                            <p className="text-[#628307] text-sm flex items-center gap-1 mt-1">
+                              <CheckCircle2 size={14} className="text-[#628307]" />
                               Верифицирован трудовым договором
                             </p>
                           )}
                         </div>
 
                         <div>
-                          <h5 className="font-medium">Основной отзыв</h5>
-                          <p className="text-gray-700">{formData.body}</p>
+                          <h5 className="font-medium text-[#1D1D1D]">Основной отзыв</h5>
+                          <p className="text-[#1D1D1D]/70">{formData.body}</p>
                         </div>
 
                         {formData.pros && (
                           <div>
-                            <h5 className="font-medium">Плюсы</h5>
-                            <p className="text-gray-700">{formData.pros}</p>
+                            <h5 className="font-medium text-[#1D1D1D]">Плюсы</h5>
+                            <p className="text-[#1D1D1D]/70">{formData.pros}</p>
                           </div>
                         )}
 
                         {formData.cons && (
                           <div>
-                            <h5 className="font-medium">Минусы</h5>
-                            <p className="text-gray-700">{formData.cons}</p>
+                            <h5 className="font-medium text-[#1D1D1D]">Минусы</h5>
+                            <p className="text-[#1D1D1D]/70">{formData.cons}</p>
                           </div>
                         )}
 
                         {formData.advice && (
                           <div>
-                            <h5 className="font-medium">Советы руководству</h5>
-                            <p className="text-gray-700">{formData.advice}</p>
+                            <h5 className="font-medium text-[#1D1D1D]">Советы руководству</h5>
+                            <p className="text-[#1D1D1D]/70">{formData.advice}</p>
                           </div>
                         )}
                       </div>
@@ -1100,67 +918,49 @@ export default function AddReviewPage() {
                       <Checkbox
                         id="anonymous"
                         checked={formData.anonymous}
-                        onCheckedChange={(checked) =>
-                          handleCheckboxChange("anonymous", checked as boolean)
-                        }
+                        onCheckedChange={checked => handleCheckboxChange("anonymous", checked as boolean)}
+                        className="text-[#628307] border-[#628307]/30 data-[state=checked]:bg-[#628307] data-[state=checked]:border-[#628307]"
                       />
-                      <Label htmlFor="anonymous">Оставить отзыв анонимно</Label>
+                      <Label htmlFor="anonymous" className="text-[#1D1D1D]">
+                        Оставить отзыв анонимно
+                      </Label>
                     </div>
 
                     <div className="flex items-center space-x-2">
                       <Checkbox
                         id="confirmTruthful"
                         checked={formData.confirmTruthful}
-                        onCheckedChange={(checked) =>
-                          handleCheckboxChange(
-                            "confirmTruthful",
-                            checked as boolean
-                          )
-                        }
+                        onCheckedChange={checked => handleCheckboxChange("confirmTruthful", checked as boolean)}
+                        className="text-[#628307] border-[#628307]/30 data-[state=checked]:bg-[#628307] data-[state=checked]:border-[#628307]"
                       />
-                      <Label htmlFor="confirmTruthful">
-                        Я подтверждаю, что этот отзыв основан на моем личном
-                        опыте работы, и информация в нем достоверна
+                      <Label htmlFor="confirmTruthful" className="text-[#1D1D1D]">
+                        Я подтверждаю, что этот отзыв основан на моем личном опыте работы, и информация в нем достоверна
                       </Label>
                     </div>
-                    {errors.confirmTruthful && (
-                      <p className="text-red-500 text-sm">
-                        {errors.confirmTruthful}
-                      </p>
-                    )}
+                    {errors.confirmTruthful && <p className="text-red-500 text-sm">{errors.confirmTruthful}</p>}
                   </div>
                 </div>
               )}
             </div>
 
-            {/* Actions */}
-            <div className="flex justify-between pt-4 border-t border-[#800000]/10">
+            <div className="flex justify-between pt-4 border-t border-[#628307]/10">
               <Button
                 variant="outline"
                 onClick={handleCancel}
-                className="text-red-500 hover:text-red-700 hover:bg-red-50 hidden md:flex"
+                className="text-[#628307] border-[#628307]/20 hover:bg-[#628307]/10 hover:text-[#4D6706] hidden md:flex"
               >
                 <X size={18} className="mr-2" />
                 Отмена
               </Button>
 
               <div className="flex gap-3 w-full md:w-auto justify-end">
-                <Button
-                  variant="outline"
-                  onClick={handleBack}
-                  disabled={activeStep === 0}
-                  className="text-gray-600"
-                >
+                <Button variant="outline" onClick={handleBack} disabled={activeStep === 0} className="text-[#1D1D1D] border-[#E6E6B0]/30 hover:bg-[#E6E6B0]/20">
                   <ChevronLeft size={18} className="mr-1" />
                   Назад
                 </Button>
 
                 {activeStep === steps.length - 1 ? (
-                  <Button
-                    onClick={handleSubmit}
-                    disabled={isSubmitting}
-                    className="bg-[#2e7d32] hover:bg-[#1b5e20]"
-                  >
+                  <Button onClick={handleSubmit} disabled={isSubmitting} className="bg-[#628307] hover:bg-[#4D6706] text-white">
                     {isSubmitting ? (
                       <>
                         <Loader2 size={18} className="mr-2 animate-spin" />
@@ -1174,10 +974,7 @@ export default function AddReviewPage() {
                     )}
                   </Button>
                 ) : (
-                  <Button
-                    onClick={handleNext}
-                    className="bg-[#800000] hover:bg-[#660000]"
-                  >
+                  <Button onClick={handleNext} className="bg-[#628307] hover:bg-[#4D6706] text-white">
                     Далее
                     <ChevronRight size={18} className="ml-1" />
                   </Button>
