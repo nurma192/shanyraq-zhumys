@@ -1,28 +1,14 @@
 "use client";
 
 import React, { useState, useEffect, useMemo, useRef } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  FormDescription,
-} from "@/components/ui/form";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -38,6 +24,12 @@ import {
   EyeOff,
   Eye,
   Loader2,
+  Mail,
+  Calendar,
+  Shield,
+  Star,
+  DollarSign,
+  FileText,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
@@ -57,21 +49,11 @@ export default function ProfilePage() {
   const [isLoadingJobs, setIsLoadingJobs] = useState(false);
   const [isLoadingLocations, setIsLoadingLocations] = useState(false);
   const [selectedJobId, setSelectedJobId] = useState<number | null>(null);
-  const [selectedLocationId, setSelectedLocationId] = useState<number | null>(
-    null
-  );
+  const [selectedLocationId, setSelectedLocationId] = useState<number | null>(null);
   const { toast } = useToast();
 
   const { user, isAuthenticated } = useAuth();
-  const {
-    data: profileData,
-    isLoading: profileLoading,
-    error: profileError,
-    fetchProfile,
-    updateUserProfile,
-    changePassword,
-    fetchedOnce,
-  } = useProfile();
+  const { data: profileData, isLoading: profileLoading, error: profileError, fetchProfile, updateUserProfile, changePassword, fetchedOnce } = useProfile();
 
   // Fetch profile data when component mounts
   useEffect(() => {
@@ -83,8 +65,7 @@ export default function ProfilePage() {
           console.error("Error fetching profile:", error);
           toast({
             title: "Ошибка загрузки профиля",
-            description:
-              "Не удалось загрузить данные профиля. Пожалуйста, попробуйте позже.",
+            description: "Не удалось загрузить данные профиля. Пожалуйста, попробуйте позже.",
             variant: "destructive",
           });
         }
@@ -192,7 +173,7 @@ export default function ProfilePage() {
         message: "Пароль должен содержать минимум 8 символов",
       }),
     })
-    .refine((data) => data.newPassword === data.confirmPassword, {
+    .refine(data => data.newPassword === data.confirmPassword, {
       message: "Пароли не совпадают",
       path: ["confirmPassword"],
     });
@@ -293,8 +274,8 @@ export default function ProfilePage() {
       await changePassword({
         oldPassword: values.oldPassword,
         newPassword: values.newPassword,
-        confirmPassword:"",
-        currentPassword:""
+        confirmPassword: "",
+        currentPassword: "",
       });
 
       toast({
@@ -338,15 +319,14 @@ export default function ProfilePage() {
   };
 
   // Determine user role for display
-  const roleDisplayText =
-    userData.role === "ROLE_ADMIN" ? "Администратор" : "Пользователь";
+  const roleDisplayText = userData.role === "ROLE_ADMIN" ? "Администратор" : "Пользователь";
 
   // Helper function to display fields that might be empty
   const displayField = (value: string) => {
     if (!value) {
-      return <span className="text-gray-400 italic">Не указано</span>;
+      return <span className="text-[#1D1D1D]/50 italic">Не указано</span>;
     }
-    return <span className="text-slate-900">{value}</span>;
+    return <span className="text-[#1D1D1D]">{value}</span>;
   };
 
   // Format phone number input to ensure +7 prefix
@@ -368,15 +348,33 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <h1 className="text-2xl font-bold text-slate-900">Мой профиль</h1>
-        <div className="flex flex-wrap gap-2">
+    <div className="space-y-8">
+      {/* Profile Header with Avatar */}
+      <div className="flex flex-col md:flex-row items-center gap-6 bg-gradient-to-r from-[#628307] to-[#4D6706] p-6 rounded-lg text-white">
+        <Avatar className="h-24 w-24 border-4 border-white shadow-lg">
+          <AvatarImage src="/images/avatar-placeholder.jpg" alt="аватар" />
+          <AvatarFallback className="bg-[#E6E6B0] text-[#1D1D1D] text-xl">{userData.name ? userData.name.substring(0, 2).toUpperCase() : "ИИ"}</AvatarFallback>
+        </Avatar>
+
+        <div className="flex-1 text-center md:text-left">
+          <h1 className="text-2xl font-bold mb-1">{userData.name || <span className="italic opacity-70">Имя не указано</span>}</h1>
+          <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 mb-3">
+            <Badge className="bg-white/20 hover:bg-white/30 text-white">{roleDisplayText}</Badge>
+            {userData.jobTitle && <Badge className="bg-[#E6E6B0]/20 hover:bg-[#E6E6B0]/30 text-white">{userData.jobTitle}</Badge>}
+          </div>
+          <p className="text-white/80">
+            {userData.company && userData.location
+              ? `${userData.company}, ${userData.location}`
+              : userData.company || userData.location || "Информация о компании и местоположении не указана"}
+          </p>
+        </div>
+
+        <div className="flex flex-col sm:flex-row gap-2 mt-4 md:mt-0">
           <Dialog open={isEditDialogOpen} onOpenChange={handleEditDialogOpen}>
             <DialogTrigger asChild>
               <Button
-                variant="outline"
-                className="flex items-center gap-2"
+                variant="secondary"
+                className="bg-white text-[#628307] hover:bg-[#E6E6B0] hover:text-[#4D6706] flex items-center gap-2"
                 disabled={profileLoading}
               >
                 <Edit className="h-4 w-4" />
@@ -385,17 +383,11 @@ export default function ProfilePage() {
             </DialogTrigger>
             <DialogContent className="sm:max-w-[500px] bg-white">
               <DialogHeader>
-                <DialogTitle>Редактировать профиль</DialogTitle>
-                <DialogDescription>
-                  Внесите изменения в профиль и нажмите сохранить, когда
-                  закончите.
-                </DialogDescription>
+                <DialogTitle className="text-[#628307]">Редактировать профиль</DialogTitle>
+                <DialogDescription>Внесите изменения в профиль и нажмите сохранить, когда закончите.</DialogDescription>
               </DialogHeader>
               <Form {...profileForm}>
-                <form
-                  onSubmit={profileForm.handleSubmit(onProfileSubmit)}
-                  className="space-y-4"
-                >
+                <form onSubmit={profileForm.handleSubmit(onProfileSubmit)} className="space-y-4">
                   <FormField
                     control={profileForm.control}
                     name="name"
@@ -404,11 +396,8 @@ export default function ProfilePage() {
                         <FormLabel>Пользователь</FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <User
-                              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
-                              size={16}
-                            />
-                            <Input {...field} className="pl-10" />
+                            <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#628307]" size={16} />
+                            <Input {...field} className="pl-10 border-[#E6E6B0] focus-visible:ring-[#628307]" />
                           </div>
                         </FormControl>
                         <FormMessage />
@@ -423,30 +412,21 @@ export default function ProfilePage() {
                         <FormLabel>Должность</FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <Briefcase
-                              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
-                              size={16}
-                            />
+                            <Briefcase className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#628307]" size={16} />
                             <Input
                               {...field}
-                              className="pl-10"
-                              onChange={(e) => {
+                              className="pl-10 border-[#E6E6B0] focus-visible:ring-[#628307]"
+                              onChange={e => {
                                 field.onChange(e);
                                 fetchJobs(e.target.value);
                                 setSelectedJobId(null);
                               }}
                             />
-                            {isLoadingJobs && (
-                              <Loader2 className="h-4 w-4 animate-spin absolute right-3 top-1/2 transform -translate-y-1/2" />
-                            )}
+                            {isLoadingJobs && <Loader2 className="h-4 w-4 animate-spin absolute right-3 top-1/2 transform -translate-y-1/2 text-[#628307]" />}
                             {jobSuggestions.length > 0 && (
-                              <div className="absolute z-10 w-full bg-white border border-gray-200 rounded-md shadow-lg mt-1 max-h-60 overflow-auto">
-                                {jobSuggestions.map((job) => (
-                                  <div
-                                    key={job.id}
-                                    className="px-4 py-2 cursor-pointer hover:bg-gray-100"
-                                    onClick={() => handleJobSelect(job)}
-                                  >
+                              <div className="absolute z-10 w-full bg-white border border-[#E6E6B0] rounded-md shadow-lg mt-1 max-h-60 overflow-auto">
+                                {jobSuggestions.map(job => (
+                                  <div key={job.id} className="px-4 py-2 cursor-pointer hover:bg-[#E6E6B0]/20" onClick={() => handleJobSelect(job)}>
                                     {job.title}
                                   </div>
                                 ))}
@@ -454,9 +434,7 @@ export default function ProfilePage() {
                             )}
                           </div>
                         </FormControl>
-                        <FormDescription>
-                          Выберите должность из списка
-                        </FormDescription>
+                        <FormDescription className="text-[#1D1D1D]/70">Выберите должность из списка</FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -469,11 +447,8 @@ export default function ProfilePage() {
                         <FormLabel>Компания</FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <Building
-                              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
-                              size={16}
-                            />
-                            <Input {...field} className="pl-10" />
+                            <Building className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#628307]" size={16} />
+                            <Input {...field} className="pl-10 border-[#E6E6B0] focus-visible:ring-[#628307]" />
                           </div>
                         </FormControl>
                         <FormMessage />
@@ -488,31 +463,26 @@ export default function ProfilePage() {
                         <FormLabel>Локация</FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <MapPin
-                              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
-                              size={16}
-                            />
+                            <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#628307]" size={16} />
                             <Input
                               {...field}
-                              className="pl-10"
-                              onChange={(e) => {
+                              className="pl-10 border-[#E6E6B0] focus-visible:ring-[#628307]"
+                              onChange={e => {
                                 field.onChange(e);
                                 fetchLocations(e.target.value);
                                 setSelectedLocationId(null);
                               }}
                             />
                             {isLoadingLocations && (
-                              <Loader2 className="h-4 w-4 animate-spin absolute right-3 top-1/2 transform -translate-y-1/2" />
+                              <Loader2 className="h-4 w-4 animate-spin absolute right-3 top-1/2 transform -translate-y-1/2 text-[#628307]" />
                             )}
                             {locationSuggestions.length > 0 && (
-                              <div className="absolute z-10 w-full bg-white border border-gray-200 rounded-md shadow-lg mt-1 max-h-60 overflow-auto">
-                                {locationSuggestions.map((location) => (
+                              <div className="absolute z-10 w-full bg-white border border-[#E6E6B0] rounded-md shadow-lg mt-1 max-h-60 overflow-auto">
+                                {locationSuggestions.map(location => (
                                   <div
                                     key={location.id}
-                                    className="px-4 py-2 cursor-pointer hover:bg-gray-100"
-                                    onClick={() =>
-                                      handleLocationSelect(location)
-                                    }
+                                    className="px-4 py-2 cursor-pointer hover:bg-[#E6E6B0]/20"
+                                    onClick={() => handleLocationSelect(location)}
                                   >
                                     {location.locationValue}
                                   </div>
@@ -521,9 +491,7 @@ export default function ProfilePage() {
                             )}
                           </div>
                         </FormControl>
-                        <FormDescription>
-                          Выберите локацию из списка
-                        </FormDescription>
+                        <FormDescription className="text-[#1D1D1D]/70">Выберите локацию из списка</FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -536,35 +504,26 @@ export default function ProfilePage() {
                         <FormLabel>Телефон</FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <Phone
-                              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
-                              size={16}
-                            />
+                            <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#628307]" size={16} />
                             <Input
                               {...field}
-                              className="pl-10"
+                              className="pl-10 border-[#E6E6B0] focus-visible:ring-[#628307]"
                               value={formatPhoneNumber(field.value)}
-                              onChange={(e) => {
-                                const formatted = formatPhoneNumber(
-                                  e.target.value
-                                );
+                              onChange={e => {
+                                const formatted = formatPhoneNumber(e.target.value);
                                 field.onChange(formatted);
                               }}
                             />
                           </div>
                         </FormControl>
-                        <FormDescription>
-                          Формат: +7XXXXXXXXXX (введите только цифры после +7)
-                        </FormDescription>
+                        <FormDescription className="text-[#1D1D1D]/70">Формат: +7XXXXXXXXXX (введите только цифры после +7)</FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                  {profileError && (
-                    <p className="text-red-500 text-sm">{profileError}</p>
-                  )}
+                  {profileError && <p className="text-red-500 text-sm">{profileError}</p>}
                   <DialogFooter>
-                    <Button type="submit" disabled={isLoading}>
+                    <Button type="submit" disabled={isLoading} className="bg-[#628307] hover:bg-[#4D6706] text-white">
                       {isLoading ? (
                         <>
                           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -580,28 +539,20 @@ export default function ProfilePage() {
             </DialogContent>
           </Dialog>
 
-          <Dialog
-            open={isPasswordDialogOpen}
-            onOpenChange={setIsPasswordDialogOpen}
-          >
+          <Dialog open={isPasswordDialogOpen} onOpenChange={setIsPasswordDialogOpen}>
             <DialogTrigger asChild>
-              <Button variant="outline" className="flex items-center gap-2">
+              <Button variant="secondary" className="bg-white/80 text-[#628307] hover:bg-[#E6E6B0] hover:text-[#4D6706] flex items-center gap-2">
                 <KeyRound className="h-4 w-4" />
                 Сменить пароль
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[500px] bg-white">
               <DialogHeader>
-                <DialogTitle>Сменить пароль</DialogTitle>
-                <DialogDescription>
-                  Введите текущий и новый пароль для смены.
-                </DialogDescription>
+                <DialogTitle className="text-[#628307]">Сменить пароль</DialogTitle>
+                <DialogDescription>Введите текущий и новый пароль для смены.</DialogDescription>
               </DialogHeader>
               <Form {...passwordForm}>
-                <form
-                  onSubmit={passwordForm.handleSubmit(onPasswordSubmit)}
-                  className="space-y-4"
-                >
+                <form onSubmit={passwordForm.handleSubmit(onPasswordSubmit)} className="space-y-4">
                   <FormField
                     control={passwordForm.control}
                     name="oldPassword"
@@ -610,29 +561,20 @@ export default function ProfilePage() {
                         <FormLabel>Текущий пароль</FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <KeyRound
-                              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
-                              size={16}
-                            />
+                            <KeyRound className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#628307]" size={16} />
                             <Input
                               type={showCurrentPassword ? "text" : "password"}
                               {...field}
-                              className="pl-10 pr-10"
+                              className="pl-10 pr-10 border-[#E6E6B0] focus-visible:ring-[#628307]"
                             />
                             <Button
                               type="button"
                               variant="ghost"
                               size="sm"
-                              className="absolute right-0 top-0 h-full px-3 py-2"
-                              onClick={() =>
-                                setShowCurrentPassword(!showCurrentPassword)
-                              }
+                              className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent text-[#1D1D1D]/50 hover:text-[#628307]"
+                              onClick={() => setShowCurrentPassword(!showCurrentPassword)}
                             >
-                              {showCurrentPassword ? (
-                                <EyeOff className="h-4 w-4 text-gray-500" />
-                              ) : (
-                                <Eye className="h-4 w-4 text-gray-500" />
-                              )}
+                              {showCurrentPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                             </Button>
                           </div>
                         </FormControl>
@@ -648,29 +590,20 @@ export default function ProfilePage() {
                         <FormLabel>Новый пароль</FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <KeyRound
-                              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
-                              size={16}
-                            />
+                            <KeyRound className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#628307]" size={16} />
                             <Input
                               type={showNewPassword ? "text" : "password"}
                               {...field}
-                              className="pl-10 pr-10"
+                              className="pl-10 pr-10 border-[#E6E6B0] focus-visible:ring-[#628307]"
                             />
                             <Button
                               type="button"
                               variant="ghost"
                               size="sm"
-                              className="absolute right-0 top-0 h-full px-3 py-2"
-                              onClick={() =>
-                                setShowNewPassword(!showNewPassword)
-                              }
+                              className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent text-[#1D1D1D]/50 hover:text-[#628307]"
+                              onClick={() => setShowNewPassword(!showNewPassword)}
                             >
-                              {showNewPassword ? (
-                                <EyeOff className="h-4 w-4 text-gray-500" />
-                              ) : (
-                                <Eye className="h-4 w-4 text-gray-500" />
-                              )}
+                              {showNewPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                             </Button>
                           </div>
                         </FormControl>
@@ -686,29 +619,20 @@ export default function ProfilePage() {
                         <FormLabel>Подтвердите пароль</FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <KeyRound
-                              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
-                              size={16}
-                            />
+                            <KeyRound className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#628307]" size={16} />
                             <Input
                               type={showConfirmPassword ? "text" : "password"}
                               {...field}
-                              className="pl-10 pr-10"
+                              className="pl-10 pr-10 border-[#E6E6B0] focus-visible:ring-[#628307]"
                             />
                             <Button
                               type="button"
                               variant="ghost"
                               size="sm"
-                              className="absolute right-0 top-0 h-full px-3 py-2"
-                              onClick={() =>
-                                setShowConfirmPassword(!showConfirmPassword)
-                              }
+                              className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent text-[#1D1D1D]/50 hover:text-[#628307]"
+                              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                             >
-                              {showConfirmPassword ? (
-                                <EyeOff className="h-4 w-4 text-gray-500" />
-                              ) : (
-                                <Eye className="h-4 w-4 text-gray-500" />
-                              )}
+                              {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                             </Button>
                           </div>
                         </FormControl>
@@ -717,7 +641,7 @@ export default function ProfilePage() {
                     )}
                   />
                   <DialogFooter>
-                    <Button type="submit" disabled={isLoading}>
+                    <Button type="submit" disabled={isLoading} className="bg-[#628307] hover:bg-[#4D6706] text-white">
                       {isLoading ? (
                         <>
                           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -735,55 +659,55 @@ export default function ProfilePage() {
         </div>
       </div>
 
+      {/* Profile Information Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-[#800000]">
+        {/* Personal Information Card */}
+        <Card className="border border-[#E6E6B0] shadow-sm">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-[#628307] flex items-center gap-2">
+              <User className="h-5 w-5" />
               Основная информация
             </CardTitle>
-            <Separator className="bg-[#800000]/10" />
+            <Separator className="bg-[#E6E6B0]" />
           </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 gap-4">
-              <div className="grid grid-cols-3 items-center">
-                <span className="text-sm font-medium text-slate-500">Роль</span>
-                <span className="col-span-2 text-slate-900">
-                  {roleDisplayText}
+          <CardContent className="pt-4">
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 items-center gap-2">
+                <span className="text-sm font-medium text-[#1D1D1D]/70">Роль</span>
+                <span className="sm:col-span-2 flex items-center gap-1">
+                  <Shield className="h-4 w-4 text-[#628307]" />
+                  <span className="text-[#1D1D1D]">{roleDisplayText}</span>
                 </span>
               </div>
 
-              <div className="grid grid-cols-3 items-center">
-                <span className="text-sm font-medium text-slate-500">
-                  Пользователь
-                </span>
-                <span className="col-span-2">
+              <div className="grid grid-cols-1 sm:grid-cols-3 items-center gap-2">
+                <span className="text-sm font-medium text-[#1D1D1D]/70">Пользователь</span>
+                <span className="sm:col-span-2 flex items-center gap-1">
+                  <User className="h-4 w-4 text-[#628307]" />
                   {displayField(userData.name)}
                 </span>
               </div>
 
-              <div className="grid grid-cols-3 items-center">
-                <span className="text-sm font-medium text-slate-500">
-                  Должность
-                </span>
-                <span className="col-span-2">
+              <div className="grid grid-cols-1 sm:grid-cols-3 items-center gap-2">
+                <span className="text-sm font-medium text-[#1D1D1D]/70">Должность</span>
+                <span className="sm:col-span-2 flex items-center gap-1">
+                  <Briefcase className="h-4 w-4 text-[#628307]" />
                   {displayField(userData.jobTitle)}
                 </span>
               </div>
 
-              <div className="grid grid-cols-3 items-center">
-                <span className="text-sm font-medium text-slate-500">
-                  Компания
-                </span>
-                <span className="col-span-2">
+              <div className="grid grid-cols-1 sm:grid-cols-3 items-center gap-2">
+                <span className="text-sm font-medium text-[#1D1D1D]/70">Компания</span>
+                <span className="sm:col-span-2 flex items-center gap-1">
+                  <Building className="h-4 w-4 text-[#628307]" />
                   {displayField(userData.company)}
                 </span>
               </div>
 
-              <div className="grid grid-cols-3 items-center">
-                <span className="text-sm font-medium text-slate-500">
-                  Локация
-                </span>
-                <span className="col-span-2">
+              <div className="grid grid-cols-1 sm:grid-cols-3 items-center gap-2">
+                <span className="text-sm font-medium text-[#1D1D1D]/70">Локация</span>
+                <span className="sm:col-span-2 flex items-center gap-1">
+                  <MapPin className="h-4 w-4 text-[#628307]" />
                   {displayField(userData.location)}
                 </span>
               </div>
@@ -791,38 +715,37 @@ export default function ProfilePage() {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-[#800000]">
+        {/* Contact Information Card */}
+        <Card className="border border-[#E6E6B0] shadow-sm">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-[#628307] flex items-center gap-2">
+              <Phone className="h-5 w-5" />
               Контактная информация
             </CardTitle>
-            <Separator className="bg-[#800000]/10" />
+            <Separator className="bg-[#E6E6B0]" />
           </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 gap-4">
-              <div className="grid grid-cols-3 items-center">
-                <span className="text-sm font-medium text-slate-500">
-                  Email
-                </span>
-                <span className="col-span-2">
+          <CardContent className="pt-4">
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 items-center gap-2">
+                <span className="text-sm font-medium text-[#1D1D1D]/70">Email</span>
+                <span className="sm:col-span-2 flex items-center gap-1">
+                  <Mail className="h-4 w-4 text-[#628307]" />
                   {displayField(userData.email)}
                 </span>
               </div>
 
-              <div className="grid grid-cols-3 items-center">
-                <span className="text-sm font-medium text-slate-500">
-                  Телефон
-                </span>
-                <span className="col-span-2">
+              <div className="grid grid-cols-1 sm:grid-cols-3 items-center gap-2">
+                <span className="text-sm font-medium text-[#1D1D1D]/70">Телефон</span>
+                <span className="sm:col-span-2 flex items-center gap-1">
+                  <Phone className="h-4 w-4 text-[#628307]" />
                   {displayField(userData.phone)}
                 </span>
               </div>
 
-              <div className="grid grid-cols-3 items-center">
-                <span className="text-sm font-medium text-slate-500">
-                  С нами с
-                </span>
-                <span className="col-span-2">
+              <div className="grid grid-cols-1 sm:grid-cols-3 items-center gap-2">
+                <span className="text-sm font-medium text-[#1D1D1D]/70">С нами с</span>
+                <span className="sm:col-span-2 flex items-center gap-1">
+                  <Calendar className="h-4 w-4 text-[#628307]" />
                   {displayField(userData.joinDate)}
                 </span>
               </div>
@@ -831,51 +754,41 @@ export default function ProfilePage() {
         </Card>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-[#800000]">
+      {/* Community Contribution Card */}
+      <Card className="border border-[#E6E6B0] shadow-sm">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-[#628307] flex items-center gap-2">
+            <Star className="h-5 w-5" />
             Ваш вклад в сообщество
           </CardTitle>
-          <Separator className="bg-[#800000]/10" />
+          <Separator className="bg-[#E6E6B0]" />
         </CardHeader>
-        <CardContent>
-          <div className="flex flex-col md:flex-row gap-6 justify-center">
-            <div className="flex flex-col items-center justify-center p-4 bg-[#800000]/5 rounded-lg max-w-md w-full">
-              <span className="text-3xl font-bold text-[#800000]">
-                {userData.reviewCount}
-              </span>
-              <span className="text-sm text-slate-600 mt-1 mb-4 text-center">
-                Отзывов о компаниях
-              </span>
-              <Button
-                variant="link"
-                className="text-[#800000] no-underline"
-                size="sm"
-                asChild
-              >
-                <a href="/profile/reviews" className="flex items-center">
+        <CardContent className="pt-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="bg-[#E6E6B0]/10 rounded-lg p-6 border border-[#E6E6B0]/30 flex flex-col items-center text-center">
+              <div className="bg-[#628307]/10 p-3 rounded-full mb-4">
+                <FileText className="h-8 w-8 text-[#628307]" />
+              </div>
+              <span className="text-3xl font-bold text-[#628307] mb-2">{userData.reviewCount}</span>
+              <span className="text-[#1D1D1D]/70 mb-4">Отзывов о компаниях</span>
+              <Button variant="outline" className="border-[#628307] text-[#628307] hover:bg-[#628307]/10 hover:text-[#628307]" asChild>
+                <a href="/profile/reviews" className="flex items-center gap-1">
                   Просмотреть
-                  <ArrowRight className="h-4 w-4 ml-1" />
+                  <ArrowRight className="h-4 w-4" />
                 </a>
               </Button>
             </div>
 
-            <div className="flex flex-col items-center justify-center p-4 bg-[#800000]/5 rounded-lg max-w-md w-full">
-              <span className="text-3xl font-bold text-[#800000]">
-                {userData.salaryCount}
-              </span>
-              <span className="text-sm text-slate-600 mt-1 mb-4 text-center">
-                Записей о зарплатах
-              </span>
-              <Button
-                variant="link"
-                className="text-[#800000] no-underline"
-                size="sm"
-                asChild
-              >
-                <a href="/profile/salaries" className="flex items-center">
+            <div className="bg-[#E6E6B0]/10 rounded-lg p-6 border border-[#E6E6B0]/30 flex flex-col items-center text-center">
+              <div className="bg-[#628307]/10 p-3 rounded-full mb-4">
+                <DollarSign className="h-8 w-8 text-[#628307]" />
+              </div>
+              <span className="text-3xl font-bold text-[#628307] mb-2">{userData.salaryCount}</span>
+              <span className="text-[#1D1D1D]/70 mb-4">Записей о зарплатах</span>
+              <Button variant="outline" className="border-[#628307] text-[#628307] hover:bg-[#628307]/10 hover:text-[#628307]" asChild>
+                <a href="/profile/salaries" className="flex items-center gap-1">
                   Просмотреть
-                  <ArrowRight className="h-4 w-4 ml-1" />
+                  <ArrowRight className="h-4 w-4" />
                 </a>
               </Button>
             </div>
