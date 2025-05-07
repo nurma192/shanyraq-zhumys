@@ -48,11 +48,11 @@ export default function CompanyLayout({ children }: { children: React.ReactNode 
     { label: "Обзор", path: "" },
     { label: "Отзывы", path: "reviews" },
     { label: "Зарплаты", path: "salaries" },
-    { label: "Налоги", path: "taxes" },
+    // { label: "Налоги", path: "taxes" },
   ];
 
   if (!overview || overview.type !== "ТОО") {
-    tabs.push({ label: "Акции", path: "stocks" });
+    // tabs.push({ label: "Акции", path: "stocks" });
   }
 
   const isActiveTab = (tabPath: string) => {
