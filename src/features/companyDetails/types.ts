@@ -1,5 +1,7 @@
 // src/features/companyDetails/types.ts
 
+import { ReactNode } from "react";
+
 // Company Overview
 export interface CompanyOverview {
   id: number;
@@ -68,6 +70,8 @@ export interface StockHistoricalData {
 
 // Company Stocks
 export interface CompanyStocks {
+  exchange: ReactNode;
+  price: number;
   companyId: number;
   companyName: string;
   symbol: string;
@@ -129,7 +133,7 @@ export interface Salary {
   currency: string;
   additionalPay: number;
   formattedAmount?: string;
-  location:string;
+  location: string;
   employmentType: string;
   hasVerification: boolean;
   payPeriod: string;
@@ -175,7 +179,7 @@ export interface Review {
   notHelpfulCount: number;
   commentsCount: number;
   date: string;
-  hasVerification:boolean;
+  hasVerification: boolean;
 }
 
 // Company Reviews Response
