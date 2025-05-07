@@ -1,0 +1,293 @@
+// src/app/profile/reviews/ReviewsPage.module.scss
+
+.reviewsPage {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.title {
+  color: #333;
+  font-weight: 600;
+}
+
+.addButton {
+  background-color: #800000;
+  color: white;
+  &:hover {
+    background-color: #660000;
+  }
+}
+
+.filters {
+  margin-bottom: 1rem;
+}
+
+.tabs {
+  .MuiTabs-indicator {
+    background-color: #800000;
+  }
+}
+
+.tab {
+  color: #333;
+  text-transform: none;
+  font-weight: 500;
+  &.Mui-selected {
+    color: #800000;
+    font-weight: 600;
+  }
+}
+
+.tableContainer {
+  box-shadow: none;
+  border: 1px solid rgba(128, 0, 0, 0.1);
+}
+
+.tableHead {
+  background-color: rgba(128, 0, 0, 0.03);
+  th {
+    font-weight: 600;
+    color: #800000;
+  }
+}
+
+.tableRow {
+  &:hover {
+    background-color: rgba(128, 0, 0, 0.02);
+  }
+}
+
+.companyCell {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.verifiedChip {
+  background-color: rgba(25, 118, 210, 0.1);
+  color: #1976d2;
+  font-size: 0.7rem;
+  height: 20px;
+}
+
+.ratingCell {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.rating {
+  font-weight: 600;
+}
+
+.starRating {
+  color: #f5b400;
+  letter-spacing: -2px;
+}
+
+.reviewTitle {
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.statusChip {
+  font-size: 0.75rem;
+  height: 24px;
+}
+
+.approvedChip {
+  background-color: rgba(46, 125, 50, 0.1);
+  color: #2e7d32;
+}
+
+.rejectedChip {
+  background-color: rgba(211, 47, 47, 0.1);
+  color: #d32f2f;
+}
+
+.pendingChip {
+  background-color: rgba(25, 118, 210, 0.1);
+  color: #1976d2;
+}
+
+.commentIcon {
+  color: #800000;
+  margin-left: 0.25rem;
+}
+
+.actionButtons {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.actionButton {
+  color: #666;
+  &:hover {
+    color: #800000;
+    background-color: rgba(128, 0, 0, 0.05);
+  }
+}
+
+.approveButton {
+  color: #2e7d32;
+  &:hover {
+    color: #2e7d32;
+    background-color: rgba(46, 125, 50, 0.05);
+  }
+}
+
+.rejectButton {
+  color: #d32f2f;
+  &:hover {
+    color: #d32f2f;
+    background-color: rgba(211, 47, 47, 0.05);
+  }
+}
+
+.cancelButton {
+  color: #666;
+}
+
+.deleteButton {
+  color: #d32f2f;
+}
+
+// AI Dialog Styles
+.aiDialogTitle {
+  background-color: #f44336;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.aiIcon {
+  color: white;
+}
+
+.aiContent {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-top: 1rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.aiOriginal,
+.aiSuggestion {
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.aiOriginal {
+  background-color: rgba(211, 47, 47, 0.05);
+  border: 1px solid rgba(211, 47, 47, 0.1);
+}
+
+.aiSuggestion {
+  background-color: rgba(46, 125, 50, 0.05);
+  border: 1px solid rgba(46, 125, 50, 0.1);
+}
+
+.aiSuggestionText {
+  .highlight {
+    color: #2e7d32;
+    font-weight: 500;
+  }
+}
+
+.aiActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.approveAiButton {
+  background-color: #2e7d32;
+  color: white;
+  &:hover {
+    background-color: #1b5e20;
+  }
+}
+
+.rejectAiButton {
+  color: #d32f2f;
+  border-color: #d32f2f;
+  &:hover {
+    background-color: rgba(211, 47, 47, 0.05);
+  }
+}
+
+// Details Dialog Styles
+.detailsTitle {
+  background-color: #800000;
+  color: white;
+}
+
+.detailsContent {
+  padding: 1rem 0;
+}
+
+.detailsHeader {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(128, 0, 0, 0.1);
+}
+
+.detailsCompany {
+  font-weight: 600;
+  color: #800000;
+}
+
+.detailsPosition {
+  color: #666;
+}
+
+.detailsRating {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.ratingValue {
+  font-weight: 600;
+  color: #800000;
+}
+
+.detailsText {
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+
+.moderatorComment {
+  background-color: rgba(211, 47, 47, 0.05);
+  border-left: 3px solid #d32f2f;
+  padding: 1rem;
+  margin-top: 1.5rem;
+}
+
+.commentTitle {
+  color: #d32f2f;
+  margin-bottom: 0.5rem;
+}
+
+.commentText {
+  color: #333;
+}

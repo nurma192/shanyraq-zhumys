@@ -1,0 +1,65 @@
+.breakdownCard {
+  margin-bottom: 2rem;
+  border-radius: 8px;
+  border: 1px solid #eee;
+
+  .cardContent {
+    padding: 1.5rem;
+    background-color: white;
+  }
+
+  .title {
+    font-weight: 600;
+    color: #800000;
+    margin-bottom: 0.5rem;
+  }
+
+  .separator {
+    background-color: rgba(128, 0, 0, 0.1);
+    margin: 0.5rem 0 1rem;
+  }
+
+  .breakdownItem {
+    margin-bottom: 1.5rem;
+
+    .breakdownHeader {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+
+      .breakdownLabel {
+        font-weight: 500;
+        color: #444;
+      }
+
+      .breakdownRange {
+        font-weight: 600;
+        color: #800000;
+      }
+    }
+
+    .rangeBar {
+      height: 8px;
+      background-color: #eee;
+      border-radius: 4px;
+      overflow: hidden;
+
+      .rangeInner {
+        height: 100%;
+        width: 100%;
+        background-color: #800000;
+        border-radius: 4px;
+      }
+    }
+  }
+
+  .additionalInfo {
+    margin-top: 0.5rem;
+
+    .additionalText {
+      color: #666;
+      font-style: italic;
+    }
+  }
+}

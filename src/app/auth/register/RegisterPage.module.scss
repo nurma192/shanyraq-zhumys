@@ -1,0 +1,61 @@
+.register-page {
+  background-color: #f9f9f9;
+  margin-top: 2rem;
+  padding: 2rem;
+  border-radius: 16px;
+
+  &__title {
+    color: #800000; /* Бордовый цвет */
+    text-align: center;
+    margin-bottom: 0.5rem;
+  }
+
+  &__subtitle {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #333;
+  }
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  &__input {
+    .MuiOutlinedInput-root {
+      fieldset {
+        border-color: #800000;
+      }
+      &:hover fieldset {
+        border-color: #800000;
+      }
+      &.Mui-focused fieldset {
+        border-color: #800000;
+      }
+    }
+  }
+
+  &__submit {
+    background-color: #800000 !important;
+    color: #fff !important;
+    font-weight: bold;
+    padding: 0.75rem 0;
+
+    &:hover {
+      background-color: #660000 !important;
+    }
+  }
+
+  &__signin {
+    border-color: #800000 !important;
+    color: #800000 !important;
+    font-weight: bold;
+    padding: 0.75rem 0;
+
+    &:hover {
+      background-color: #ffe6e6 !important;
+      border-color: #800000 !important;
+    }
+  }
+}

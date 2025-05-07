@@ -1,0 +1,76 @@
+// src/app/profile/add/AddPage.module.scss
+.addPage {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.header {
+  margin-bottom: 1rem;
+}
+
+.title {
+  color: #333;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  color: #666;
+  max-width: 800px;
+}
+
+.selectionCard {
+  padding: 2rem;
+}
+
+.selectionTitle {
+  color: #800000;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+}
+
+.optionsGrid {
+  margin-top: 1rem;
+}
+
+.optionCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 1.5rem;
+  border: 1px solid rgba(128, 0, 0, 0.1);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  height: 100%;
+  text-align: center;
+
+  &:hover {
+    border-color: #800000;
+    box-shadow: 0 4px 12px rgba(128, 0, 0, 0.1);
+    transform: translateY(-2px);
+  }
+}
+
+.iconContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background-color: rgba(128, 0, 0, 0.1);
+  margin-bottom: 1rem;
+  color: #800000;
+}
+
+.optionTitle {
+  color: #800000;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.optionDescription {
+  color: #666;
+}

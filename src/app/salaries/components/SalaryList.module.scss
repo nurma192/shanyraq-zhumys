@@ -1,0 +1,74 @@
+.listContainer {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  background-color: white;
+  margin-bottom: 2rem;
+}
+
+.tableHead {
+  background-color: #f7f7f7;
+  font-weight: 600;
+  color: #4b5563;
+  text-align: left;
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+
+.tableRow {
+  border-bottom: 1px solid #e5e7eb;
+  transition: background-color 0.2s;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.companyCell {
+  padding: 1rem;
+}
+
+.companyInfo {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.companyLogo {
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
+  overflow: hidden;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f3f4f6;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+}
+
+.companyName {
+  font-weight: 500;
+  color: #111827;
+  margin-bottom: 0.25rem;
+}
+
+.salaryCell {
+  text-align: right;
+  padding: 1rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.salaryText {
+  white-space: nowrap;
+}

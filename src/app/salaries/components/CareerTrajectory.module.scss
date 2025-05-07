@@ -1,0 +1,78 @@
+.trajectoryContainer {
+  margin-bottom: 2.5rem;
+
+  .sectionTitle {
+    color: #800000;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+  }
+
+  .trajectoryCards {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+
+    @media (max-width: 768px) {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  }
+
+  .trajectoryCard {
+    flex: 1;
+    position: relative;
+    border: 1px solid #eee;
+
+    &.currentCard {
+      border-color: #800000;
+      box-shadow: 0 2px 8px rgba(128, 0, 0, 0.1);
+    }
+
+    .cardContent {
+      padding: 1.25rem;
+    }
+
+    .cardHeader {
+      margin-bottom: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .currentBadge {
+      background-color: #800000;
+      border-radius: 4px;
+      color: white;
+      font-size: 0.7rem;
+      width: fit-content;
+    }
+
+    .roleTitle {
+      font-weight: 600;
+      color: #333;
+    }
+
+    .salary {
+      font-weight: 500;
+      color: #800000;
+    }
+
+    .arrow {
+      position: absolute;
+      right: -12px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.5rem;
+      color: #800000;
+      z-index: 1;
+
+      @media (max-width: 768px) {
+        bottom: -12px;
+        right: 50%;
+        top: auto;
+        transform: translateX(50%) rotate(90deg);
+      }
+    }
+  }
+}

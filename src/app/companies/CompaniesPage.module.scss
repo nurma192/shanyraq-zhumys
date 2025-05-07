@@ -1,0 +1,368 @@
+// src/app/companies/CompaniesPage.module.scss
+.companiesPage {
+  padding: 2rem 0;
+}
+
+.pageHeader {
+  margin-bottom: 2rem;
+}
+
+.pageTitle {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 0.5rem;
+}
+
+.pageDescription {
+  color: #64748b;
+  max-width: 760px;
+}
+
+.activeFilters {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  background-color: #f8fafc;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.filtersLabel {
+  font-weight: 500;
+  color: #334155;
+  margin-right: 0.5rem;
+}
+
+.filterTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.filterTag {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  background-color: #800000;
+  color: #fff;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.removeFilterBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  padding: 0.125rem;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+  }
+}
+
+.clearFiltersBtn {
+  margin-left: auto;
+  color: #800000;
+  font-weight: 500;
+
+  &:hover {
+    background-color: rgba(128, 0, 0, 0.05);
+  }
+}
+
+.mobileFilterToggle {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+  border-color: #e2e8f0;
+
+  .filterIcon {
+    margin-right: 0.5rem;
+  }
+
+  @media (max-width: 1024px) {
+    display: flex;
+  }
+}
+
+.pageContent {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 2rem;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.filtersPanel {
+  background-color: #fff;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  align-self: flex-start;
+  position: sticky;
+  top: 5rem;
+
+  @media (max-width: 1024px) {
+    position: static;
+    display: none;
+    margin-bottom: 1.5rem;
+  }
+}
+
+.filtersPanelVisible {
+  @media (max-width: 1024px) {
+    display: block;
+  }
+}
+
+.filterHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.filterTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0;
+}
+
+.filterIcon {
+  color: #800000;
+}
+
+.filterDivider {
+  margin-bottom: 1.5rem;
+}
+
+.filterSection {
+  margin-bottom: 1.5rem;
+}
+
+.filterSectionTitle {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 0.75rem;
+}
+
+.filterSelect {
+  width: 100%;
+  border-color: #e2e8f0;
+  &:focus {
+    border-color: #800000;
+    box-shadow: 0 0 0 1px rgba(128, 0, 0, 0.2);
+  }
+}
+.filterSelectContent {
+  background-color: #fff !important;
+}
+.filterSelectItem:hover {
+  background-color: #d5d5d5 !important;
+}
+.ratingFilter,
+.sizeFilter {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.ratingOption,
+.sizeOption {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.ratingLabel,
+.sizeLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.ratingStars {
+  display: flex;
+  align-items: center;
+  color: #f5b400;
+}
+
+.starFilled {
+  color: #f5b400;
+}
+
+.starEmpty {
+  color: #d4d4d8;
+}
+
+.resetFiltersBtn {
+  width: 100%;
+  border-color: #800000;
+  color: #800000;
+
+  &:hover {
+    background-color: rgba(128, 0, 0, 0.05);
+  }
+}
+
+.resultsPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.resultsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #fff;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 1rem 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.resultsCount {
+  font-weight: 500;
+  color: #334155;
+}
+
+.viewToggle {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.viewNoActive {
+  background-color: #fff;
+}
+.viewNoActive:hover,
+.viewActive:hover {
+  background-color: none !important;
+}
+.companyGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+
+  &.listView {
+    grid-template-columns: 1fr;
+  }
+}
+
+.companyCard {
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+}
+.companyCardd {
+  height: 100% !important;
+}
+.companyCardContent {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.5rem !important;
+  height: 100%;
+  .listView & {
+    flex-direction: row;
+  }
+}
+
+.companyLogo {
+  width: 80px;
+  height: 80px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f8fafc;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  flex-shrink: 0;
+
+  img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+  }
+}
+
+.companyInfo {
+  flex: 1;
+}
+
+.companyName {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #800000;
+  margin-bottom: 0.5rem;
+}
+
+.companyRating {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.ratingValue {
+  font-weight: 600;
+  color: #334155;
+}
+
+.companyLocation {
+  color: #64748b;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.companyDescription {
+  color: #475569;
+  font-size: 0.875rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 0.25rem;
+  margin-top: 2rem;
+}
+
+.paginationBtn {
+  min-width: 2rem;
+
+  &[data-state="on"] {
+    background-color: #800000;
+    color: #fff;
+
+    &:hover {
+      background-color: #660000;
+    }
+  }
+}

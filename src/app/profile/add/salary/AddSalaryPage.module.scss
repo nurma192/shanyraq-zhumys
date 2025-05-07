@@ -1,0 +1,203 @@
+// src/app/profile/add/salary/AddSalaryPage.module.scss
+.addSalaryPage {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.header {
+  margin-bottom: 1rem;
+}
+
+.title {
+  color: #333;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  color: #666;
+  max-width: 800px;
+}
+
+.formContainer {
+  padding: 2rem;
+}
+
+.stepper {
+  margin-bottom: 2rem;
+}
+
+.formContent {
+  min-height: 350px;
+  margin-bottom: 2rem;
+}
+
+.stepContent {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.stepTitle {
+  color: #800000;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.formField {
+  margin-bottom: 1rem;
+}
+
+.fieldLabel {
+  color: #333;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.salaryGroup {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
+}
+
+.salaryField {
+  flex: 2;
+}
+
+.currencyField {
+  flex: 1;
+  min-width: 100px;
+}
+
+.periodField {
+  flex: 1;
+  min-width: 120px;
+}
+
+.divider {
+  margin: 1rem 0;
+  background-color: rgba(128, 0, 0, 0.1);
+}
+
+.sectionTitle {
+  color: #800000;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.salarySummary {
+  padding: 1.5rem;
+  border: 1px solid rgba(128, 0, 0, 0.1);
+  margin-bottom: 1.5rem;
+}
+
+.summaryTitle {
+  color: #800000;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(128, 0, 0, 0.1);
+}
+
+.summaryContent {
+  display: flex;
+  flex-direction: column;
+}
+
+.summaryHeader {
+  margin-bottom: 1rem;
+
+  h6 {
+    color: #333;
+    font-weight: 600;
+  }
+}
+
+.summaryCompany {
+  color: #800000;
+  font-weight: 500;
+}
+
+.summaryDivider {
+  margin: 1rem 0;
+  background-color: rgba(128, 0, 0, 0.05);
+}
+
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+.summaryItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.summaryLabel {
+  color: #666;
+}
+
+.summaryValue {
+  font-weight: 500;
+}
+
+.confirmationOptions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.privacyNote {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background-color: rgba(128, 0, 0, 0.03);
+  border-radius: 4px;
+}
+
+.formActions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(128, 0, 0, 0.1);
+}
+
+.cancelButton {
+  color: #d32f2f;
+  &:hover {
+    background-color: rgba(211, 47, 47, 0.05);
+  }
+}
+
+.navigationButtons {
+  display: flex;
+  gap: 1rem;
+}
+
+.backButton {
+  color: #666;
+}
+
+.nextButton {
+  background-color: #800000;
+  color: white;
+  &:hover {
+    background-color: #660000;
+  }
+}
+
+.submitButton {
+  background-color: #2e7d32;
+  color: white;
+  &:hover {
+    background-color: #1b5e20;
+  }
+}

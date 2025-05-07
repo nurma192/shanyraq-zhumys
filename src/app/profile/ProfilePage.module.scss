@@ -1,0 +1,91 @@
+// src/app/profile/ProfilePage.module.scss
+.profilePage {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.title {
+  color: #333;
+  font-weight: 600;
+}
+
+.editButton {
+  color: #800000;
+  border-color: #800000;
+  &:hover {
+    background-color: rgba(128, 0, 0, 0.05);
+    border-color: #800000;
+  }
+}
+
+.infoCard,
+.statsCard {
+  padding: 1.5rem;
+  height: 100%;
+}
+
+.cardTitle {
+  color: #800000;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.divider {
+  background-color: rgba(128, 0, 0, 0.1);
+  margin-bottom: 1.25rem;
+}
+
+.infoGrid {
+  margin-top: 0.5rem;
+}
+
+.infoLabel {
+  color: #666;
+  font-weight: 500;
+}
+
+.infoValue {
+  color: #333;
+}
+
+.statsGrid {
+  margin-top: 1rem;
+}
+
+.statItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 1rem;
+  border-radius: 8px;
+  background-color: rgba(128, 0, 0, 0.03);
+}
+
+.statNumber {
+  color: #800000;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.statLabel {
+  color: #666;
+  margin-bottom: 1rem;
+}
+
+.viewButton {
+  color: #800000;
+  text-transform: none;
+  font-weight: 500;
+  &:hover {
+    background-color: rgba(128, 0, 0, 0.05);
+  }
+}
