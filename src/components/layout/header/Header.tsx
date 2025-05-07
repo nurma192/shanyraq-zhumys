@@ -3,41 +3,16 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Container } from "@/components/ui/container";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Cookies from "js-cookie";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
-import {
-  Search,
-  User,
-  Menu,
-  ChevronDown,
-  FileText,
-  DollarSign,
-  LogOut,
-  Building,
-  BarChart2,
-  Loader2,
-} from "lucide-react";
-import styles from "./Header.module.scss";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Search, User, Menu, ChevronDown, FileText, DollarSign, LogOut, Building, BarChart2, Loader2 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useCompany } from "@/hooks/useCompany";
 import searchAPI from "@/services/searchAPI";
 
-// Define interface for company search results
 interface CompanySearchResult {
   id: string;
   name: string;
@@ -64,10 +39,7 @@ export default function Header() {
     setMounted(true);
 
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        searchResultsRef.current &&
-        !searchResultsRef.current.contains(event.target as Node)
-      ) {
+      if (searchResultsRef.current && !searchResultsRef.current.contains(event.target as Node)) {
         setShowResults(false);
       }
     };
@@ -111,11 +83,7 @@ export default function Header() {
       try {
         const response = await searchAPI.searchCompanies(value);
 
-        if (
-          response.data &&
-          response.data.content &&
-          response.data.content.length > 0
-        ) {
+        if (response.data && response.data.content && response.data.content.length > 0) {
           setSearchResults(response.data.content);
           setShowResults(true);
           setNoResultsFound(false);
@@ -155,57 +123,46 @@ export default function Header() {
   };
 
   return (
-    <header className={styles.header}>
-      <Container>
-        <div className={styles.headerContent}>
-          <Link href="/" className={styles.logo} onClick={closeDrawer}>
-            iWork
+    <header className="bg-white border-b border-[#E6E6B0]/30 py-4 sticky top-0 z-50 shadow-sm">
+      <div className="container mx-auto px-4">
+        <div className="flex items-center justify-between relative">
+          <Link href="/" className="text-2xl font-bold text-[#628307] mr-4 flex-shrink-0" onClick={closeDrawer}>
+            Shanyraq Zhumys
           </Link>
 
-          <div className={styles.searchBar}>
-            <form
-              onSubmit={handleSearchSubmit}
-              className={styles.searchWrapper}
-            >
-              <Search className={styles.searchIcon} size={18} />
+          <div className="flex-1 max-w-xl mx-auto hidden md:block">
+            <form onSubmit={handleSearchSubmit} className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#1D1D1D]/70" size={18} />
               <Input
                 type="text"
                 placeholder="Поиск по компаниям"
                 value={searchValue}
                 onChange={handleSearchChange}
-                className={styles.searchInput}
+                className="pl-10 h-10 border-[#E6E6B0] focus:border-[#628307] focus:ring-[#628307]/20"
               />
 
               {isSearchLoading && (
                 <div className="absolute top-1/2 right-3 transform -translate-y-1/2">
-                  <Loader2 className="h-4 w-4 animate-spin text-gray-500" />
+                  <Loader2 className="h-4 w-4 animate-spin text-[#1D1D1D]/50" />
                 </div>
               )}
 
               {showResults && (
                 <div
-                  className="absolute top-full left-0 w-full bg-white border border-gray-200 rounded-md shadow-lg z-50 mt-1 max-h-60 overflow-y-auto"
+                  className="absolute top-full left-0 w-full bg-white border border-[#E6E6B0]/30 rounded-md shadow-lg z-50 mt-1 max-h-60 overflow-y-auto"
                   ref={searchResultsRef}
                 >
                   {noResultsFound ? (
-                    <div className="px-4 py-3 text-gray-500">
-                      Компания с названием "{searchValue}" не найдена
-                    </div>
+                    <div className="px-4 py-3 text-[#1D1D1D]/70">Компания с названием "{searchValue}" не найдена</div>
                   ) : (
-                    searchResults.map((company) => (
+                    searchResults.map(company => (
                       <div
                         key={company.id}
-                        className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center"
+                        className="px-4 py-2 hover:bg-[#E6E6B0]/20 cursor-pointer flex items-center"
                         onClick={() => handleCompanySelect(company.id)}
                       >
-                        {company.logoUrl && (
-                          <img
-                            src={company.logoUrl}
-                            alt={company.name}
-                            className="w-6 h-6 mr-2 object-contain"
-                          />
-                        )}
-                        <span>{company.name}</span>
+                        {company.logoUrl && <img src={company.logoUrl || "/placeholder.svg"} alt={company.name} className="w-6 h-6 mr-2 object-contain" />}
+                        <span className="text-[#1D1D1D]">{company.name}</span>
                       </div>
                     ))
                   )}
@@ -214,106 +171,95 @@ export default function Header() {
             </form>
           </div>
 
-          <nav className={`${styles.nav} ${isMenuOpen ? styles.navOpen : ""}`}>
+          <nav className="hidden md:flex items-center gap-6">
             <Link
               href="/companies"
-              className={`${styles.navLink} ${
-                isActive("/companies") ? styles.activeLink : ""
+              className={`text-[#1D1D1D] font-medium hover:text-[#628307] transition-colors relative ${
+                isActive("/companies") ? "text-[#628307] font-semibold" : ""
               }`}
             >
+              {isActive("/companies") && <span className="absolute -bottom-4 left-0 right-0 h-0.5 bg-[#628307]"></span>}
               Компании
             </Link>
             <Link
               href="/salaries"
-              className={`${styles.navLink} ${
-                isActive("/salaries") ? styles.activeLink : ""
+              className={`text-[#1D1D1D] font-medium hover:text-[#628307] transition-colors relative ${
+                isActive("/salaries") ? "text-[#628307] font-semibold" : ""
               }`}
             >
+              {isActive("/salaries") && <span className="absolute -bottom-4 left-0 right-0 h-0.5 bg-[#628307]"></span>}
               Зарплаты
             </Link>
 
             {mounted && (
               <>
                 {isAuthenticated ? (
-                  <div className={styles.profileSection}>
+                  <div className="relative">
                     <DropdownMenu>
-                      <DropdownMenuTrigger className={styles.profileTrigger}>
-                        <User size={18} className={styles.navIcon} />
+                      <DropdownMenuTrigger className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-[#628307]/10 text-[#1D1D1D] font-medium">
+                        <User size={18} className="text-[#628307]" />
                         <span>Профиль</span>
-                        <ChevronDown size={16} className={styles.chevron} />
+                        <ChevronDown size={16} className="transition-transform duration-200 data-[state=open]:rotate-180" />
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent className={styles.profileDropdown}>
-                        <DropdownMenuItem className={styles.profileItem}>
-                          <div className={styles.profileInfo}>
-                            <span className={styles.userName}>
-                              {user?.username}
-                            </span>
-                            <span className={styles.userEmail}>
-                              {user?.email}
-                            </span>
-                            <span className={styles.userRole}>
-                              {user?.role === "ROLE_ADMIN"
-                                ? "Администратор"
-                                : "Пользователь"}
+                      <DropdownMenuContent className="w-56 p-3 bg-white border border-[#E6E6B0]/30">
+                        <DropdownMenuItem className="p-3 cursor-default focus:bg-transparent">
+                          <div className="flex flex-col gap-1">
+                            <span className="font-semibold text-[#1D1D1D]">{user?.username}</span>
+                            <span className="text-xs text-[#1D1D1D]/70">{user?.email}</span>
+                            <span className="text-xs px-2 py-0.5 bg-[#628307]/10 text-[#628307] rounded-full w-fit mt-1">
+                              {user?.role === "ROLE_ADMIN" ? "Администратор" : "Пользователь"}
                             </span>
                           </div>
                         </DropdownMenuItem>
-                        <Link href="/profile" className={styles.profileLink}>
-                          <DropdownMenuItem>
-                            <User size={16} className={styles.menuIcon} />
+
+                        <div className="h-px bg-[#E6E6B0]/30 my-2"></div>
+
+                        <Link href="/profile">
+                          <DropdownMenuItem className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-[#628307]/10 cursor-pointer text-[#1D1D1D] focus:bg-[#628307]/10 focus:text-[#1D1D1D]">
+                            <User size={16} className="text-[#628307]" />
                             Мой профиль
                           </DropdownMenuItem>
                         </Link>
-                        <Link
-                          href="/profile/reviews"
-                          className={styles.profileLink}
-                        >
-                          <DropdownMenuItem>
-                            <FileText size={16} className={styles.menuIcon} />
+                        <Link href="/profile/reviews">
+                          <DropdownMenuItem className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-[#628307]/10 cursor-pointer text-[#1D1D1D] focus:bg-[#628307]/10 focus:text-[#1D1D1D]">
+                            <FileText size={16} className="text-[#628307]" />
                             {isAdmin ? "Модерация отзывов" : "Мои отзывы"}
                           </DropdownMenuItem>
                         </Link>
-                        <Link
-                          href="/profile/salaries"
-                          className={styles.profileLink}
-                        >
-                          <DropdownMenuItem>
-                            <DollarSign size={16} className={styles.menuIcon} />
+                        <Link href="/profile/salaries">
+                          <DropdownMenuItem className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-[#628307]/10 cursor-pointer text-[#1D1D1D] focus:bg-[#628307]/10 focus:text-[#1D1D1D]">
+                            <DollarSign size={16} className="text-[#628307]" />
                             {isAdmin ? "Модерация зарплат" : "Мои зарплаты"}
                           </DropdownMenuItem>
                         </Link>
-                        <div className={styles.dropdownDivider}></div>
+
+                        <div className="h-px bg-[#E6E6B0]/30 my-2"></div>
+
                         <Link href="/profile/add">
-                          <Button size="sm" className={styles.reviewButton}>
-                            Оставить отзыв
-                          </Button>
+                          <Button className="w-full bg-[#628307] hover:bg-[#4D6706] text-white">Оставить отзыв</Button>
                         </Link>
-                        <div className={styles.dropdownDivider}></div>
+
+                        <div className="h-px bg-[#E6E6B0]/30 my-2"></div>
+
                         <DropdownMenuItem
                           onClick={handleLogout}
-                          className={styles.logoutItem}
+                          className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-red-50 cursor-pointer text-red-600 focus:bg-red-50 focus:text-red-600"
                         >
-                          <LogOut size={16} className={styles.menuIcon} />
+                          <LogOut size={16} />
                           Выйти
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>
                 ) : (
-                  <div className={styles.authButtons}>
+                  <div className="flex items-center gap-2">
                     <Link href="/auth/login">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className={styles.loginButton}
-                      >
+                      <Button variant="ghost" className="text-[#1D1D1D] hover:text-[#628307] hover:bg-[#628307]/10">
                         Войти
                       </Button>
                     </Link>
                     <Link href="/auth/register">
-                      <Button size="sm" className={styles.registerButton}>
-                        Регистрация
-                      </Button>
+                      <Button className="bg-[#628307] hover:bg-[#4D6706] text-white">Регистрация</Button>
                     </Link>
                   </div>
                 )}
@@ -321,26 +267,42 @@ export default function Header() {
             )}
           </nav>
 
-          <div className={styles.mobileNav}>
+          <div className="md:hidden flex items-center gap-2">
             <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
               <SheetTrigger asChild>
-                <button className={styles.menuToggle} onClick={toggleMenu}>
+                <button className="p-2 rounded-md hover:bg-[#628307]/10 text-[#1D1D1D]" onClick={toggleMenu}>
                   <Menu size={24} />
                 </button>
               </SheetTrigger>
-              <SheetContent side="left" className={styles.mobileMenu}>
-                <SheetHeader className={styles.mobileMenuHeader}>
-                  <SheetTitle className={styles.mobileLogo}>iWork</SheetTitle>
+              <SheetContent side="left" className="p-0 border-r border-[#E6E6B0]/30 w-[280px]">
+                <SheetHeader className="p-4 border-b border-[#E6E6B0]/30">
+                  <SheetTitle className="text-2xl font-bold text-[#628307]">iWork</SheetTitle>
                 </SheetHeader>
 
-                <div className={styles.mobileMenuContent}>
-                  <div className={styles.mobileMenuPrimary}>
+                <div className="p-4">
+                  <form onSubmit={handleSearchSubmit} className="relative mb-6">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#1D1D1D]/70" size={18} />
+                    <Input
+                      type="text"
+                      placeholder="Поиск по компаниям"
+                      value={searchValue}
+                      onChange={handleSearchChange}
+                      className="pl-10 h-10 border-[#E6E6B0] focus:border-[#628307] focus:ring-[#628307]/20"
+                    />
+                    {isSearchLoading && (
+                      <div className="absolute top-1/2 right-3 transform -translate-y-1/2">
+                        <Loader2 className="h-4 w-4 animate-spin text-[#1D1D1D]/50" />
+                      </div>
+                    )}
+                  </form>
+
+                  <div className="space-y-1 mb-6">
                     <Link
                       href="/companies"
-                      className={`${styles.mobileMenuItem} ${
+                      className={`flex items-center gap-3 px-3 py-2.5 rounded-md ${
                         isActive("/companies")
-                          ? styles.mobileMenuItemActive
-                          : ""
+                          ? "bg-[#628307]/10 text-[#628307] font-semibold border-l-2 border-[#628307] pl-[10px]"
+                          : "text-[#1D1D1D] hover:bg-[#E6E6B0]/20"
                       }`}
                       onClick={closeDrawer}
                     >
@@ -349,8 +311,10 @@ export default function Header() {
                     </Link>
                     <Link
                       href="/salaries"
-                      className={`${styles.mobileMenuItem} ${
-                        isActive("/salaries") ? styles.mobileMenuItemActive : ""
+                      className={`flex items-center gap-3 px-3 py-2.5 rounded-md ${
+                        isActive("/salaries")
+                          ? "bg-[#628307]/10 text-[#628307] font-semibold border-l-2 border-[#628307] pl-[10px]"
+                          : "text-[#1D1D1D] hover:bg-[#E6E6B0]/20"
                       }`}
                       onClick={closeDrawer}
                     >
@@ -359,93 +323,78 @@ export default function Header() {
                     </Link>
                   </div>
 
-                  <div className={styles.mobileMenuDivider}></div>
+                  <div className="h-px bg-[#E6E6B0]/30 my-4"></div>
 
                   {mounted && isAuthenticated ? (
-                    <div className={styles.mobileMenuSecondary}>
-                      <div className={styles.mobileProfileInfo}>
-                        <User size={24} className={styles.mobileProfileIcon} />
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-3 p-3 bg-[#628307]/10 rounded-md">
+                        <div className="w-10 h-10 rounded-full bg-[#628307] text-white flex items-center justify-center">
+                          <User size={20} />
+                        </div>
                         <div>
-                          <div className={styles.mobileUserName}>
-                            {user?.username}
-                          </div>
-                          <div className={styles.mobileUserEmail}>
-                            {user?.email}
-                          </div>
+                          <div className="font-semibold text-[#1D1D1D]">{user?.username}</div>
+                          <div className="text-xs text-[#1D1D1D]/70">{user?.email}</div>
                         </div>
                       </div>
 
-                      <Link
-                        href="/profile"
-                        className={`${styles.mobileMenuItem} ${
-                          isActive("/profile")
-                            ? styles.mobileMenuItemActive
-                            : ""
-                        }`}
-                        onClick={closeDrawer}
-                      >
-                        <User size={20} />
-                        <span>Мой профиль</span>
-                      </Link>
-                      <Link
-                        href="/profile/reviews"
-                        className={`${styles.mobileMenuItem} ${
-                          isActive("/profile/reviews")
-                            ? styles.mobileMenuItemActive
-                            : ""
-                        }`}
-                        onClick={closeDrawer}
-                      >
-                        <FileText size={20} />
-                        <span>
-                          {isAdmin ? "Модерация отзывов" : "Мои отзывы"}
-                        </span>
-                      </Link>
-                      <Link
-                        href="/profile/salaries"
-                        className={`${styles.mobileMenuItem} ${
-                          isActive("/profile/salaries")
-                            ? styles.mobileMenuItemActive
-                            : ""
-                        }`}
-                        onClick={closeDrawer}
-                      >
-                        <DollarSign size={20} />
-                        <span>
-                          {isAdmin ? "Модерация зарплат" : "Мои зарплаты"}
-                        </span>
-                      </Link>
+                      <div className="space-y-1">
+                        <Link
+                          href="/profile"
+                          className={`flex items-center gap-3 px-3 py-2.5 rounded-md ${
+                            isActive("/profile")
+                              ? "bg-[#628307]/10 text-[#628307] font-semibold border-l-2 border-[#628307] pl-[10px]"
+                              : "text-[#1D1D1D] hover:bg-[#E6E6B0]/20"
+                          }`}
+                          onClick={closeDrawer}
+                        >
+                          <User size={20} />
+                          <span>Мой профиль</span>
+                        </Link>
+                        <Link
+                          href="/profile/reviews"
+                          className={`flex items-center gap-3 px-3 py-2.5 rounded-md ${
+                            isActive("/profile/reviews")
+                              ? "bg-[#628307]/10 text-[#628307] font-semibold border-l-2 border-[#628307] pl-[10px]"
+                              : "text-[#1D1D1D] hover:bg-[#E6E6B0]/20"
+                          }`}
+                          onClick={closeDrawer}
+                        >
+                          <FileText size={20} />
+                          <span>{isAdmin ? "Модерация отзывов" : "Мои отзывы"}</span>
+                        </Link>
+                        <Link
+                          href="/profile/salaries"
+                          className={`flex items-center gap-3 px-3 py-2.5 rounded-md ${
+                            isActive("/profile/salaries")
+                              ? "bg-[#628307]/10 text-[#628307] font-semibold border-l-2 border-[#628307] pl-[10px]"
+                              : "text-[#1D1D1D] hover:bg-[#E6E6B0]/20"
+                          }`}
+                          onClick={closeDrawer}
+                        >
+                          <DollarSign size={20} />
+                          <span>{isAdmin ? "Модерация зарплат" : "Мои зарплаты"}</span>
+                        </Link>
+                      </div>
 
                       <Link href="/profile/add" onClick={closeDrawer}>
-                        <Button className={styles.mobileAddButton}>
-                          Оставить отзыв
-                        </Button>
+                        <Button className="w-full bg-[#628307] hover:bg-[#4D6706] text-white">Оставить отзыв</Button>
                       </Link>
 
-                      <Button
-                        variant="outline"
-                        className={styles.mobileLogoutButton}
-                        onClick={handleLogout}
-                      >
-                        <LogOut size={18} />
+                      <Button variant="outline" className="w-full border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 mt-4" onClick={handleLogout}>
+                        <LogOut size={18} className="mr-2" />
                         <span>Выйти</span>
                       </Button>
                     </div>
                   ) : (
                     mounted && (
-                      <div className={styles.mobileAuthButtons}>
+                      <div className="space-y-3">
                         <Link href="/auth/login" onClick={closeDrawer}>
-                          <Button
-                            variant="outline"
-                            className={styles.mobileLoginButton}
-                          >
+                          <Button variant="outline" className="w-full border-[#628307] text-[#628307] hover:bg-[#628307]/10">
                             Войти
                           </Button>
                         </Link>
                         <Link href="/auth/register" onClick={closeDrawer}>
-                          <Button className={styles.mobileRegisterButton}>
-                            Регистрация
-                          </Button>
+                          <Button className="w-full bg-[#628307] hover:bg-[#4D6706] text-white">Регистрация</Button>
                         </Link>
                       </div>
                     )
@@ -455,7 +404,7 @@ export default function Header() {
             </Sheet>
           </div>
         </div>
-      </Container>
+      </div>
     </header>
   );
 }
