@@ -18,25 +18,14 @@ interface CareerTrajectoryProps {
 export default function CareerTrajectory({ data }: CareerTrajectoryProps) {
   return (
     <div className="mb-6">
-      <h2 className="text-xl font-semibold text-[#800000] mb-4">
-        Динамика зарплаты по опыту
-      </h2>
+      <h2 className="text-xl font-semibold text-[#800000] mb-4">Динамика зарплаты по опыту</h2>
 
       <div className="flex flex-col md:flex-row gap-2 items-stretch">
         {data.map((item, index) => (
-          <Card
-            key={index}
-            className={`flex-1 relative ${
-              item.current ? "border-[#800000] shadow-md" : "border-gray-200"
-            }`}
-          >
+          <Card key={index} className={`flex-1 relative ${item.current ? "border-[#800000] shadow-md" : "border-gray-200"}`}>
             <CardContent className="p-4">
               <div className="mb-2">
-                {item.current && (
-                  <Badge className="bg-[#800000] hover:bg-[#660000] mb-2">
-                    Текущий
-                  </Badge>
-                )}
+                {item.current && <Badge className="bg-[#800000] hover:bg-[#660000] mb-2">Текущий</Badge>}
                 <p className="font-semibold text-gray-800">{item.role}</p>
               </div>
               <p className="font-medium text-[#800000]">{item.salaryRange}</p>
